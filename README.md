@@ -1,9 +1,26 @@
-# The ultimate makefile I widh I had for C development
+# The ultimate makefile I wish I had for C development
 
-This makefile is simply the ultimate makefile I wish I had when I start developping in C.
+This makefile is quite simply the ultimate makefile that I wish I had when I start developing in C.
+
+It has no dependencies except for the make utility itself. It doesn't use any scripting language under the hood and does it all on its own.
 
 These are the following features the makefile had:
 
- - Recompile when necessary (C files as well as header files)
- - Progress status when recompiling
- - Support multithread
+ - Recompile if necessary (C files as well as header files)
+ - No link if no file needs to be recompiled
+ - Support basic rules: all clean fclean re
+ - Progress status during recompiling
+ - Multithread support (normal makefile behavior)
+ - Out-of-source builds
+
+Things that I don't want:
+ - Automatic tracking of source files
+ - Automatic tracking of header files
+
+Things that would be great I had but I don't need it at the moment:
+ - Support for libraries (static of dynamic)
+ - Install rule
+ - Unit test
+ - Test coverage / Check for memory leaks
+ - Code quality controls
+ - Autocheck new version

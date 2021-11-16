@@ -1,6 +1,10 @@
 
 include files.mk
 
+#########
+# Check consistency of files.mk
+#########
+
 ifndef NAME
 $(error NAME must be defined: NAME is the name of the final binary)
 endif
@@ -21,6 +25,10 @@ ifndef SRC
 $(error SRC must be defined: SRC is the exhaustive list of all source files)
 endif
 
+#########
+# Define termcap values if possible
+#########
+
 _RED=$(shell tput setaf 1 2> /dev/null || echo -n "")
 _GREEN=$(shell tput setaf 2 2> /dev/null || echo -n "")
 _YELLOW=$(shell tput setaf 3 2> /dev/null || echo -n "")
@@ -30,12 +38,20 @@ _CYAN=$(shell tput setaf 6 2> /dev/null || echo -n "")
 _WHITE=$(shell tput setaf 7 2> /dev/null || echo -n "")
 _END=$(shell tput sgr0 2> /dev/null || echo -n "")
 
+#########
+# Define print functions
+#########
+
 define print_name
-	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" "$(_CYAN)" "$(_END)" "$(_GREEN)" "$(_END)" "$(_YELLOW)" "$(NAME)" "$(_END)" ""
+	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" "$(_CYAN)" "$(_END)" "$(_GREEN)" "$(_END)" "$(_YELLOW)" "$(_NAME)" "$(_END)" ""
+endef
+
+define print_nothing_to_do
+	printf " %s[ INFO ]%s Nothing to do\\n" "$(_CYAN)" "$(_END)"
 endef
 
 define print_progress # name of file to compile as argument
-	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" "$(_CYAN)" "$(NB_ACTU)" "$(NB_TO_COMP)" "$(_END)" "$(_GREEN)" "$(_END)" "\`$(strip $(1))\`"
+	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" "$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" "$(_GREEN)" "$(_END)" "\`$(strip $(1))\`"
 endef
 
 define print_clean
@@ -43,27 +59,35 @@ define print_clean
 endef
 
 define print_fclean
-	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" "$(_CYAN)" "$(_END)" "$(_RED)" "$(_END)" "$(_YELLOW)" "$(NAME)" "$(_END)"
+	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" "$(_CYAN)" "$(_END)" "$(_RED)" "$(_END)" "$(_YELLOW)" "$(_NAME)" "$(_END)"
 endef
 
+_NAME = $(strip $(NAME))
 _INC_FOLDER = $(strip $(INC_FOLDER))
 _SRC_FOLDER = $(strip $(SRC_FOLDER))
 _BUILD_FOLDER = $(strip $(BUILD_FOLDER))
 
-CC = clang
-CFLAGS ?= -Wall -Wextra -Werror -Weverything -pedantic -MMD
-IFLAGS ?= -I $(_INC_FOLDER)
+_CC = clang
+_CFLAGS = -Wall -Wextra -Werror -Weverything -pedantic -MMD $(CFLAGS)
+_IFLAGS = -I $(_INC_FOLDER)
+_LDFLAGS = $(LDFLAGS)
+_LIBS = $(LIBS)
 
 _SRC = $(SRC:%.c=$(_SRC_FOLDER)%.c)
 _OBJ = $(SRC:%.c=$(_BUILD_FOLDER)%.o)
 _DEP = $(SRC:%.c=$(_BUILD_FOLDER)%.d)
 
-.PHONY: all
-all: $(NAME)
+#########
+# Standard rules
+#########
 
-$(NAME): INIT $(_OBJ)
-	@ $(CC) $(CFLAGS) -o $@ $(_OBJ)
-	@ $(call print_name, $(NAME))
+.PHONY: all
+all: $(_NAME)
+
+$(_NAME): INIT $(_OBJ)
+	@ test $(_NB_TO_COMP) -ne 0 || $(call print_nothing_to_do)
+	@ test $(_NB_TO_COMP) -eq 0 || $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LIBS)
+	@ test $(_NB_TO_COMP) -eq 0 || $(call print_name)
 
 ifdef COUNT_OBJS
 
@@ -74,8 +98,8 @@ else
 
 $(_BUILD_FOLDER)%.o: $(_SRC_FOLDER)%.c
 	@ mkdir -p $(dir $@)
-	@ $(eval NB_ACTU := $(shell echo $$(( $(NB_ACTU) + 1 )) ))
-	@ $(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
+	@ $(_CC) $(_CFLAGS) $(_IFLAGS) -c $< -o $@
+	@ $(eval _NB_ACTU := $(shell echo $$(( $(_NB_ACTU) + 1 )) ))
 	@ $(call print_progress, $<)
 
 endif
@@ -84,8 +108,8 @@ endif
 
 .PHONY: INIT
 INIT:
-	@ $(eval NB_TO_COMP := $(shell env COUNT_OBJS=YES make $(_OBJ) | grep +1 | wc -l))
-	@ $(eval NB_ACTU := 0)
+	@ $(eval _NB_TO_COMP := $(shell env COUNT_OBJS=YES make $(_OBJ) | grep +1 | wc -l))
+	@ $(eval _NB_ACTU := 0)
 
 .PHONY: clean
 clean:
@@ -94,7 +118,7 @@ clean:
 
 .PHONY: fclean
 fclean: clean
-	@ rm -rf $(NAME)
+	@ rm -rf $(_NAME)
 	@ $(call print_fclean)
 
 .PHONY: re
