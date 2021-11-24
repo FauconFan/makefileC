@@ -7,7 +7,7 @@ BUILD_FOLDER = build/
 
 CFLAGS = -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
 LDFLAGS =
-LIBS =
+LDLIBS =
 
 SRC = \
 	main.c \

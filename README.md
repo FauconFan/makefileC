@@ -7,7 +7,7 @@ It has no dependencies except for the make utility itself. It doesn't use any sc
 These are the following features the makefile have:
 
  - Features:
-   - Recompile if necessary (C files as well as header files)
+   - Recompile if necessary (C source files as well as header files)
    - No link if no file needs to be recompiled
    - Support basic rules: all clean fclean re
    - Progress status during recompiling

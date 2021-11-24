@@ -16,7 +16,7 @@ CFLAGS = -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
 ## LD Flags
 LDFLAGS =
 ## Libs Flags
-LIBS =
+LDLIBS =
 
 # Exhaustive list of the source files (base dir is $(SRC_FOLDER))
 # All your source code files must be in $(SRC_FOLDER)

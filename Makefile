@@ -107,9 +107,10 @@ error_missing_variables:
 endif
 
 # Default values if not set
+COMPILER 
 CFLAGS ?= -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
 LDFLAGS ?=
-LIBS ?=
+LDLIBS ?=
 
 #########
 # Define variables
@@ -124,7 +125,7 @@ _CC := clang
 _CFLAGS := $(CFLAGS) -MMD
 _IFLAGS := -I $(_INC_FOLDER)
 _LDFLAGS := $(LDFLAGS)
-_LIBS := $(LIBS)
+_LDLIBS := $(LDLIBS)
 
 _SRC := $(SRC:%.c=$(_SRC_FOLDER)%.c)
 _OBJ := $(SRC:%.c=$(_BUILD_FOLDER)%.o)
@@ -156,7 +157,7 @@ all: $(_NAME)
 
 $(_NAME): INIT $(_OBJ)
 	@ test $(_NB_TO_COMP) -ne 0 || $(call print_nothing_to_relink)
-	@ test $(_NB_TO_COMP) -eq 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LIBS))
+	@ test $(_NB_TO_COMP) -eq 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
 	@ test $(_NB_TO_COMP) -eq 0 || $(call print_name)
 
 ifdef COUNT_OBJS
