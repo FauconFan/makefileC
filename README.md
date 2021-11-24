@@ -11,10 +11,11 @@ These are the following features the makefile have:
    - No link if no file needs to be recompiled
    - Support basic rules: all clean fclean re
    - Progress status during recompiling
-   - Multithread support (normal makefile behavior)
+   - Multithread support (native makefile feature)
    - Out-of-source builds
    - Change compiler and flags (default is clang with warning flags on C17)
    - Verbose mode with VERBOSE=1 `make VERBOSE=1`
+   - Error handling (missing files.mk file, misssing variables, missing specified files, presence of unspecified files)
 
 Things that I don't want:
  - Automatic tracking of source files
@@ -22,7 +23,6 @@ Things that I don't want:
 
 Things that would be great it had but I don't need it at the moment:
  - Features:
-   - Good error handling
    - make debug / make release
  - Hierarchical projects and deployment
    - Self init

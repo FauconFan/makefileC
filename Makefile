@@ -58,6 +58,13 @@ define print_fclean
 		"$(_YELLOW)" "$(_NAME)" "$(_END)"
 endef
 
+define print_missing_files_mk
+	printf " %s[ INFO ]%s \`files.mk\` is missing\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s stopping\\n" \
+		"$(_CYAN)" "$(_END)"
+endef
+
 define print_errors # 1:list of missing variables
 	$(foreach err,$(1),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
@@ -68,8 +75,14 @@ define print_errors # 1:list of missing variables
 		"$(_CYAN)" "$(_END)"
 endef
 
-define print_missing_files_mk
-	printf " %s[ INFO ]%s \`files.mk\` is missing\\n" \
+define print_missing_files # 1:list of files in spec but no exist, 2:list of files that exist but not in spec
+	$(foreach file, $(1), printf " %s[ INFO ]%s This file is in \`files.mk\` but doesn't exist: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(file)";)
+	$(foreach file, $(2), printf " %s[ INFO ]%s This file exists but is not in \`files.mk\`: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(file)";)
+	printf " %s[ INFO ]%s change your \`files.mk\` file accordingly\\n" \
 		"$(_CYAN)" "$(_END)"
 	printf " %s[ INFO ]%s stopping\\n" \
 		"$(_CYAN)" "$(_END)"
@@ -80,7 +93,9 @@ endef
 # Include files.mk
 #########
 
+# Verify missing files.mk
 ifeq ($(wildcard ./files.mk),)
+.PHONY: error_missing_files
 error_missing_files:
 	@ $(call print_missing_files_mk)
 	@ false
@@ -100,17 +115,13 @@ _ERRORS += $(if $(value SRC_FOLDER),,SRC_FOLDER)
 _ERRORS += $(if $(value BUILD_FOLDER),,BUILD_FOLDER)
 _ERRORS += $(if $(value SRC),,SRC)
 
+# Verify missing variables in files.mk
 ifneq ($(strip $(_ERRORS)),)
+.PHONY: error_missing_variables
 error_missing_variables:
 	@ $(call print_errors, $(_ERRORS))
 	@ false
 endif
-
-# Default values if set by default
-CC ?= $(if $(filter-out $(origin CC),default),$(CC),clang)
-CFLAGS ?= $(if $(filter-out $(origin CFLAGS),default),$(CFLAGS),-Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17)
-LDFLAGS ?= $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
-LDLIBS ?= $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
 #########
 # Define variables
@@ -121,15 +132,33 @@ _INC_FOLDER := $(strip $(INC_FOLDER))
 _SRC_FOLDER := $(strip $(SRC_FOLDER))
 _BUILD_FOLDER := $(strip $(BUILD_FOLDER))
 
-_CC := $(CC)
-_CFLAGS := $(CFLAGS) -MMD
+
+# Default values if set by default
+_CC := $(if $(filter-out $(origin CC),default),$(CC),clang)
+_CFLAGS := $(if $(filter-out $(origin CFLAGS),default),$(CFLAGS),-Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17)
+_CFLAGS += -MMD
 _IFLAGS := -I $(_INC_FOLDER)
-_LDFLAGS := $(LDFLAGS)
-_LDLIBS := $(LDLIBS)
+_LDFLAGS := $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
+_LDLIBS := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
 _SRC := $(SRC:%.c=$(_SRC_FOLDER)%.c)
 _OBJ := $(SRC:%.c=$(_BUILD_FOLDER)%.o)
 _DEP := $(SRC:%.c=$(_BUILD_FOLDER)%.d)
+
+# Verify missing files in files.mk
+rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
+_SRC_WILDCARDED := $(call rwildcard, $(patsubst %/,%,$(_SRC_FOLDER)), *.c)
+
+_SRC_SPEC_NO_EXISTS := $(sort $(filter-out $(_SRC_WILDCARDED), $(_SRC)))
+_SRC_EXISTS_NO_SPEC := $(sort $(filter-out $(_SRC), $(_SRC_WILDCARDED)))
+
+ifneq ($(strip $(_SRC_SPEC_NO_EXISTS) $(_SRC_EXISTS_NO_SPEC)),)
+.PHONY: error_missing_files
+error_missing_files:
+	@ $(call print_missing_files, $(_SRC_SPEC_NO_EXISTS), $(_SRC_EXISTS_NO_SPEC))
+	@ false
+endif
 
 #########
 # Standard rules
