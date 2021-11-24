@@ -1,29 +1,9 @@
 
+SELF_URL_GIT = https://github.com/fauconfan/makefileC
+SELF_URL_MAKEFILE = https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile
+SELF_URL_MAKEFILE_FILE_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.files.mk
+
 include files.mk
-
-#########
-# Check consistency of files.mk
-#########
-
-ifndef NAME
-$(error NAME must be defined: NAME is the name of the final binary)
-endif
-
-ifndef INC_FOLDER
-$(error INC_FOLDER must be defined: INC_FOLDER define the base root for header files)
-endif
-
-ifndef SRC_FOLDER
-$(error SRC_FOLDER must be defined: SRC_FOLDER define the base root for source files)
-endif
-
-ifndef BUILD_FOLDER
-$(error BUILD_FOLDER must be defined: BUILD_FOLDER define the base root for generated files)
-endif
-
-ifndef SRC
-$(error SRC must be defined: SRC is the exhaustive list of all source files)
-endif
 
 #########
 # Define termcap values if possible
@@ -43,39 +23,84 @@ _END=$(shell tput sgr0 2> /dev/null || echo -n "")
 #########
 
 define print_name
-	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" "$(_CYAN)" "$(_END)" "$(_GREEN)" "$(_END)" "$(_YELLOW)" "$(_NAME)" "$(_END)" ""
+	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_GREEN)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME)" "$(_END)" ""
 endef
 
 define print_nothing_to_do
-	printf " %s[ INFO ]%s Nothing to do\\n" "$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s Nothing to do\\n" \
+		"$(_CYAN)" "$(_END)"
 endef
 
 define print_progress # name of file to compile as argument
-	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" "$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" "$(_GREEN)" "$(_END)" "\`$(strip $(1))\`"
+	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" \
+		"$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" \
+		"$(_GREEN)" "$(_END)" \
+		"\`$(strip $(1))\`"
 endef
 
 define print_clean
-	printf " %s[ INFO ]%s %sRemove%s       object and dependency files\\n" "$(_CYAN)" "$(_END)" "$(_RED)" "$(_END)"
+	printf " %s[ INFO ]%s %sRemove%s       object and dependency files\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_RED)" "$(_END)"
 endef
 
 define print_fclean
-	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" "$(_CYAN)" "$(_END)" "$(_RED)" "$(_END)" "$(_YELLOW)" "$(_NAME)" "$(_END)"
+	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_RED)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME)" "$(_END)"
 endef
 
-_NAME = $(strip $(NAME))
-_INC_FOLDER = $(strip $(INC_FOLDER))
-_SRC_FOLDER = $(strip $(SRC_FOLDER))
-_BUILD_FOLDER = $(strip $(BUILD_FOLDER))
+#########
+# Check consistency of files.mk
+#########
 
-_CC = clang
-_CFLAGS = -Wall -Wextra -Werror -Weverything -pedantic -MMD $(CFLAGS)
-_IFLAGS = -I $(_INC_FOLDER)
-_LDFLAGS = $(LDFLAGS)
-_LIBS = $(LIBS)
+_ERRORS :=
 
-_SRC = $(SRC:%.c=$(_SRC_FOLDER)%.c)
-_OBJ = $(SRC:%.c=$(_BUILD_FOLDER)%.o)
-_DEP = $(SRC:%.c=$(_BUILD_FOLDER)%.d)
+_ERRORS += $(if $(value NAME),,NAME)
+_ERRORS += $(if $(value INC_FOLDER),,INC_FOLDER)
+_ERRORS += $(if $(value SRC_FOLDER),,SRC_FOLDER)
+_ERRORS += $(if $(value BUILD_FOLDER),,BUILD_FOLDER)
+_ERRORS += $(if $(value SRC),,SRC)
+
+ifneq ($(strip $(_ERRORS)),)
+error:
+	@ $(foreach err,$(_ERRORS),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(err)";)
+	@ printf " %s[ INFO ]%s change your \`files.mk\` file accordingly\\n" \
+		"$(_CYAN)" "$(_END)"
+	@ printf " %s[ INFO ]%s stopping\\n" \
+		"$(_CYAN)" "$(_END)"
+	@ false
+endif
+
+# Default values if not set
+CFLAGS ?= -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
+LDFLAGS ?=
+LIBS ?=
+
+#########
+# Define variables
+#########
+
+_NAME := $(strip $(NAME))
+_INC_FOLDER := $(strip $(INC_FOLDER))
+_SRC_FOLDER := $(strip $(SRC_FOLDER))
+_BUILD_FOLDER := $(strip $(BUILD_FOLDER))
+
+_CC := clang
+_CFLAGS := $(CFLAGS) -MMD
+_IFLAGS := -I $(_INC_FOLDER)
+_LDFLAGS := $(LDFLAGS)
+_LIBS := $(LIBS)
+
+_SRC := $(SRC:%.c=$(_SRC_FOLDER)%.c)
+_OBJ := $(SRC:%.c=$(_BUILD_FOLDER)%.o)
+_DEP := $(SRC:%.c=$(_BUILD_FOLDER)%.d)
 
 #########
 # Standard rules
@@ -104,7 +129,7 @@ $(_BUILD_FOLDER)%.o: $(_SRC_FOLDER)%.c
 
 endif
 
--include $(DEP)
+-include $(_DEP)
 
 .PHONY: INIT
 INIT:
