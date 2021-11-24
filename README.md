@@ -13,6 +13,7 @@ These are the following features the makefile have:
    - Progress status during recompiling
    - Multithread support (normal makefile behavior)
    - Out-of-source builds
+   - Verbose mode with VERBOSE=1 `make VERBOSE=1`
 
 Things that I don't want:
  - Automatic tracking of source files
@@ -20,7 +21,6 @@ Things that I don't want:
 
 Things that would be great it had but I don't need it at the moment:
  - Features:
-   - verbose mode for makefile
    - Change compiler on demand
    - Good error handling
  - Hierarchical projects and deployment

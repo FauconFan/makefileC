@@ -27,12 +27,18 @@ define print_name
 		"$(_YELLOW)" "$(_NAME)" "$(_END)" ""
 endef
 
-define print_nothing_to_do
-	printf " %s[ INFO ]%s Nothing to do\\n" \
+define print_nothing_to_relink
+	printf " %s[ INFO ]%s Nothing to recompile\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
 
-define print_progress # name of file to compile as argument
+define print_cmd # 1:cmd
+	printf " %s[ CMD ]%s %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(1)"
+endef
+
+define print_progress # 1:name of file to compile as argument
 	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" \
 		"$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
@@ -52,7 +58,7 @@ define print_fclean
 		"$(_YELLOW)" "$(_NAME)" "$(_END)"
 endef
 
-define print_errors # list of missing variables
+define print_errors # 1:list of missing variables
 	$(foreach err,$(1),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(err)";)
@@ -128,12 +134,29 @@ _DEP := $(SRC:%.c=$(_BUILD_FOLDER)%.d)
 # Standard rules
 #########
 
+VERBOSE ?= 0
+
+# Manage verbose
+ifeq ($(VERBOSE),0)
+
+define cmd #1: command to run
+	$(1)
+endef
+
+else
+
+define cmd #1: command to run
+	($(1) && $(call print_cmd, $(strip $(1))))
+endef
+
+endif
+
 .PHONY: all
 all: $(_NAME)
 
 $(_NAME): INIT $(_OBJ)
-	@ test $(_NB_TO_COMP) -ne 0 || $(call print_nothing_to_do)
-	@ test $(_NB_TO_COMP) -eq 0 || $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LIBS)
+	@ test $(_NB_TO_COMP) -ne 0 || $(call print_nothing_to_relink)
+	@ test $(_NB_TO_COMP) -eq 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LIBS))
 	@ test $(_NB_TO_COMP) -eq 0 || $(call print_name)
 
 ifdef COUNT_OBJS
@@ -145,7 +168,7 @@ else
 
 $(_BUILD_FOLDER)%.o: $(_SRC_FOLDER)%.c
 	@ mkdir -p $(dir $@)
-	@ $(_CC) $(_CFLAGS) $(_IFLAGS) -c $< -o $@
+	@ $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) -c $< -o $@)
 	@ $(eval _NB_ACTU := $(shell echo $$(( $(_NB_ACTU) + 1 )) ))
 	@ $(call print_progress, $<)
 
@@ -160,12 +183,12 @@ INIT:
 
 .PHONY: clean
 clean:
-	@ rm -rf $(_BUILD_FOLDER)
+	@ $(call cmd, rm -rf $(_BUILD_FOLDER))
 	@ $(call print_clean)
 
 .PHONY: fclean
 fclean: clean
-	@ rm -rf $(_NAME)
+	@ $(call cmd, rm -f $(_NAME))
 	@ $(call print_fclean)
 
 .PHONY: re
