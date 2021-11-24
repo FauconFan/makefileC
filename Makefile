@@ -3,8 +3,6 @@ SELF_URL_GIT = https://github.com/fauconfan/makefileC
 SELF_URL_MAKEFILE = https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile
 SELF_URL_MAKEFILE_FILE_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.files.mk
 
-include files.mk
-
 #########
 # Define termcap values if possible
 #########
@@ -54,6 +52,36 @@ define print_fclean
 		"$(_YELLOW)" "$(_NAME)" "$(_END)"
 endef
 
+define print_errors # list of missing variables
+	$(foreach err,$(1),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(err)";)
+	printf " %s[ INFO ]%s change your \`files.mk\` file accordingly\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s stopping\\n" \
+		"$(_CYAN)" "$(_END)"
+endef
+
+define print_missing_files_mk
+	printf " %s[ INFO ]%s \`files.mk\` is missing\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s stopping\\n" \
+		"$(_CYAN)" "$(_END)"
+endef
+
+
+#########
+# Include files.mk
+#########
+
+ifeq ($(wildcard ./files.mk),)
+error_missing_files:
+	@ $(call print_missing_files_mk)
+	@ false
+else
+include files.mk
+endif
+
 #########
 # Check consistency of files.mk
 #########
@@ -67,14 +95,8 @@ _ERRORS += $(if $(value BUILD_FOLDER),,BUILD_FOLDER)
 _ERRORS += $(if $(value SRC),,SRC)
 
 ifneq ($(strip $(_ERRORS)),)
-error:
-	@ $(foreach err,$(_ERRORS),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(err)";)
-	@ printf " %s[ INFO ]%s change your \`files.mk\` file accordingly\\n" \
-		"$(_CYAN)" "$(_END)"
-	@ printf " %s[ INFO ]%s stopping\\n" \
-		"$(_CYAN)" "$(_END)"
+error_missing_variables:
+	@ $(call print_errors, $(_ERRORS))
 	@ false
 endif
 

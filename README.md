@@ -18,11 +18,13 @@ Things that I don't want:
  - Automatic tracking of header files
 
 Things that would be great it had but I don't need it at the moment:
- - make debug
+ - make debug / make release
  - verbose mode for makefile
  - makefile subprojects
  - Autocheck new version (from repository)
  - Change compiler on demand
+ - Self install
+ - Good error handling
  - Support for libraries (static of dynamic)
  - Install rule
  - Unit test
