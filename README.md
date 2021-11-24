@@ -28,10 +28,11 @@ Things that would be great it had but I don't need it at the moment:
    - Self init
    - Self update (Autocheck new version from repository)
    - makefile subprojects
-   - Support for libraries (static of dynamic)
+   - Support for libraries (static or dynamic)
    - Install rule
  - Test and CI
    - Unit test
-   - Test coverage
-   - Check for memory leaks from black box tests
+   - Black box tests (inputs / outputs behavior)
+   - Test coverage (from black box)
+   - Check memory leaks (from black box)
    - Code quality controls
