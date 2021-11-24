@@ -10,7 +10,9 @@ SRC_FOLDER = src/
 ## folder that contains the object and dependency files [.[od]]
 BUILD_FOLDER = build/
 
-# Flags
+# Makefile built-ins variables
+## CC compiler
+CC = clang
 ## C Flags
 CFLAGS = -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
 ## LD Flags

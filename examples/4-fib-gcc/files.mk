@@ -12,9 +12,9 @@ BUILD_FOLDER = build/
 
 # Makefile built-ins variables
 ## CC compiler
-CC = clang
+CC = gcc
 ## C Flags
-CFLAGS = -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
+CFLAGS = -Wall -Wextra -Werror -pedantic -O2 -std=c11
 ## LD Flags
 LDFLAGS =
 ## Libs Flags

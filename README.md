@@ -13,6 +13,7 @@ These are the following features the makefile have:
    - Progress status during recompiling
    - Multithread support (normal makefile behavior)
    - Out-of-source builds
+   - Change compiler and flags (default is clang with warning flags on C17)
    - Verbose mode with VERBOSE=1 `make VERBOSE=1`
 
 Things that I don't want:
@@ -21,7 +22,6 @@ Things that I don't want:
 
 Things that would be great it had but I don't need it at the moment:
  - Features:
-   - Change compiler on demand
    - Good error handling
  - Hierarchical projects and deployment
    - Self install

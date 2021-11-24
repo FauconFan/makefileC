@@ -106,11 +106,11 @@ error_missing_variables:
 	@ false
 endif
 
-# Default values if not set
-COMPILER 
-CFLAGS ?= -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
-LDFLAGS ?=
-LDLIBS ?=
+# Default values if set by default
+CC ?= $(if $(filter-out $(origin CC),default),$(CC),clang)
+CFLAGS ?= $(if $(filter-out $(origin CFLAGS),default),$(CFLAGS),-Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17)
+LDFLAGS ?= $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
+LDLIBS ?= $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
 #########
 # Define variables
@@ -121,7 +121,7 @@ _INC_FOLDER := $(strip $(INC_FOLDER))
 _SRC_FOLDER := $(strip $(SRC_FOLDER))
 _BUILD_FOLDER := $(strip $(BUILD_FOLDER))
 
-_CC := clang
+_CC := $(CC)
 _CFLAGS := $(CFLAGS) -MMD
 _IFLAGS := -I $(_INC_FOLDER)
 _LDFLAGS := $(LDFLAGS)
