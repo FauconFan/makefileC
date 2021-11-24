@@ -24,7 +24,7 @@ Things that would be great it had but I don't need it at the moment:
  - Features:
    - Good error handling
  - Hierarchical projects and deployment
-   - Self install
+   - Self init
    - Self update (Autocheck new version from repository)
    - make debug / make release
    - makefile subprojects
