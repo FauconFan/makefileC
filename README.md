@@ -13,18 +13,18 @@ These are the following features the makefile have:
   - `make re`: shortcut for make fclean && make all
 - Debug mode `make debug` and `make redebug`
 - Verbose mode with VERBOSE=1 `make VERBOSE=1 [target]` (prints out meaningful commands)
-- Compile or recompile only if necessary (C source files as well as header files)
+- Compile or recompile only if necessary (source files as well as header files)
 - If no file needs to be recompiled, nothing is done (no relink)
-- Progress status during (re)compiling
+- Progress status during (re)compiling (per file)
 - Multithread support (native makefile feature)
 - Out-of-source builds (the source and header directory is not altered in any way)
 - Configuration through a config file `config.mk`
   - Specify names of final binaries (release and debug)
   - Change compiler and flags (warnings, optimization, debug, standard, etc...)
   - Specify source, build, and include directories names
-  - Lists all source files
+  - List all source files
 - Error handling
-  - The config.mk file is missing
+  - The `config.mk` file is missing
   - Unauthorized variables are defined
   - Specified files are missing
   - Presence of unspecified files
