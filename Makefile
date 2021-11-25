@@ -1,7 +1,7 @@
 
 SELF_URL_GIT = https://github.com/fauconfan/makefileC
 SELF_URL_MAKEFILE = https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile
-SELF_URL_MAKEFILE_FILE_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk
+SELF_URL_MAKEFILE_CONFIG_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk
 
 ###############################################################################
 #########                                                            ##########
@@ -64,7 +64,7 @@ define print_fclean
 		"$(_YELLOW)" "$(_NAME_DEBUG)" "$(_END)"
 endef
 
-define print_missing_files_mk
+define print_missing_config_mk
 	printf " %s[ INFO ]%s \`%s\` is missing\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)"
@@ -112,7 +112,7 @@ _CONFIG_FILE = ./config.mk
 ifeq ($(wildcard $(_CONFIG_FILE)),)
 .PHONY: error_missing_file
 error_missing_file:
-	@ $(call print_missing_files_mk)
+	@ $(call print_missing_config_mk)
 	@ false
 else
 include $(_CONFIG_FILE)
