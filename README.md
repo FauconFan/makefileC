@@ -15,15 +15,18 @@ These are the following features the makefile have:
    - Out-of-source builds
    - Change compiler and flags (default is clang with warning flags on C17)
    - Verbose mode with VERBOSE=1 `make VERBOSE=1`
-   - Error handling (missing files.mk file, misssing variables, missing specified files, presence of unspecified files)
+   - Error handling
+     - The config.mk file is missing
+     - Unauthorized variables are defined
+     - Specified files are missing
+     - Presence of unspecified files
+   - Debug mode `make debug` and `make redebug`
 
 Things that I don't want:
  - Automatic tracking of source files
  - Automatic tracking of header files
 
 Things that would be great it had but I don't need it at the moment:
- - Features:
-   - make debug / make release
  - Hierarchical projects and deployment
    - Self init
    - Self update (Autocheck new version from repository)
@@ -37,6 +40,6 @@ Things that would be great it had but I don't need it at the moment:
    - Check memory leaks (from black box)
    - Code quality controls
 
-todo:
- - check previous variables
- - check if one output file is a keyword
+To do later:
+ - check if variables are being redefined inside the config file and crash
+ - check if NAME of NAME_DEBUG has a keyword value and crash

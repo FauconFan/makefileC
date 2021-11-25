@@ -1,7 +1,7 @@
 
-SELF_URL_GIT = https://github.com/fauconfan/makefileC
-SELF_URL_MAKEFILE = https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile
-SELF_URL_MAKEFILE_CONFIG_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk
+_SELF_URL_GIT = https://github.com/fauconfan/makefileC
+_SELF_URL_MAKEFILE = https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile
+_SELF_URL_MAKEFILE_CONFIG_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk
 
 ###############################################################################
 #########                                                            ##########
@@ -11,49 +11,49 @@ SELF_URL_MAKEFILE_CONFIG_TEMPLATE = https://raw.githubusercontent.com/FauconFan/
 
 ######### Define termcap values if possible
 
-_RED=$(shell tput setaf 1 2> /dev/null || echo -n "")
-_GREEN=$(shell tput setaf 2 2> /dev/null || echo -n "")
-_YELLOW=$(shell tput setaf 3 2> /dev/null || echo -n "")
-_BLUE=$(shell tput setaf 4 2> /dev/null || echo -n "")
-_PURPLE=$(shell tput setaf 5 2> /dev/null || echo -n "")
-_CYAN=$(shell tput setaf 6 2> /dev/null || echo -n "")
-_WHITE=$(shell tput setaf 7 2> /dev/null || echo -n "")
-_END=$(shell tput sgr0 2> /dev/null || echo -n "")
+_RED    := $(shell tput setaf 1 2> /dev/null || echo -n "")
+_GREEN  := $(shell tput setaf 2 2> /dev/null || echo -n "")
+_YELLOW := $(shell tput setaf 3 2> /dev/null || echo -n "")
+_BLUE   := $(shell tput setaf 4 2> /dev/null || echo -n "")
+_PURPLE := $(shell tput setaf 5 2> /dev/null || echo -n "")
+_CYAN   := $(shell tput setaf 6 2> /dev/null || echo -n "")
+_WHITE  := $(shell tput setaf 7 2> /dev/null || echo -n "")
+_END    := $(shell tput sgr0 2> /dev/null || echo -n "")
 
 ######### Define print functions
 
-define print_name
+define _print_name
 	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
 		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
 endef
 
-define print_nothing_to_relink
+define _print_nothing_to_relink
 	printf " %s[ INFO ]%s Nothing to recompile\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
 
-define print_cmd # 1:cmd
+define _print_cmd # 1:cmd
 	printf " %s[ CMD ]%s %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(1)"
 endef
 
-define print_progress # 1:name of file to compile as argument
+define _print_progress # 1:name of file to compile as argument
 	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" \
 		"$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
 		"\`$(strip $(1))\`"
 endef
 
-define print_clean
+define _print_clean
 	printf " %s[ INFO ]%s %sRemove%s       object and dependency files\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_RED)" "$(_END)"
 endef
 
-define print_fclean
+define _print_fclean
 	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_RED)" "$(_END)" \
@@ -64,19 +64,25 @@ define print_fclean
 		"$(_YELLOW)" "$(_NAME_DEBUG)" "$(_END)"
 endef
 
-define print_missing_config_mk
+define _print_missing_config_mk
 	printf " %s[ INFO ]%s \`%s\` is missing\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)"
 endef
 
-define print_missing_values # 1:list of missing variables
+define _print_unauthorized_variables # 1:list of unauthorized variables
+	$(foreach err,$(1),printf " %s[ INFO ]%s Cannot define variable: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(err)";)
+endef
+
+define _print_missing_variables # 1:list of missing variables
 	$(foreach err,$(1),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(err)";)
 endef
 
-define print_missing_files # 1:list of files in spec but no exist, 2:list of files that exist but not in spec
+define _print_missing_files # 1:list of files in spec but no exist, 2:list of files that exist but not in spec
 	$(foreach file, $(1), printf " %s[ INFO ]%s This file is in the config file (\`%s\`) but doesn't exist: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)" \
@@ -87,7 +93,7 @@ define print_missing_files # 1:list of files in spec but no exist, 2:list of fil
 		"$(file)";)
 endef
 
-define print_end_error_reporting
+define _print_end_error_reporting
 	printf " %s[ INFO ]%s create or change your \`%s\` file accordingly\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)"
@@ -95,16 +101,22 @@ define print_end_error_reporting
 		"$(_CYAN)" "$(_END)"
 endef
 
+######### Define makefile functions
+
+rwildcard              = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+file_defined_variables = $(foreach V, $(sort $(.VARIABLES)), $(if $(filter $(origin $(V)),file),$(V),))
+
 ###############################################################################
 #########                                                            ##########
 #########                      LOAD `config.mk`                      ##########
 #########                                                            ##########
 ###############################################################################
 
-_HAS_ERROR                      := 0
-_HAS_ERROR_MISSING_CONFIG_FILE  := 0
-_HAS_ERROR_MISSING_VARIABLES    := 0
-_HAS_ERROR_UNCONSISTENT_FILES   := 0
+_HAS_ERROR                               := 0
+_HAS_ERROR_MISSING_CONFIG_FILE           := 0
+_HAS_ERROR_UNAUTHORIZED_VARIABLES        := 0
+_HAS_ERROR_MISSING_VARIABLES             := 0
+_HAS_ERROR_UNCONSISTENT_FILES            := 0
 
 _CONFIG_FILE := ./config.mk
 
@@ -115,7 +127,34 @@ _HAS_ERROR = 1
 _HAS_ERROR_MISSING_CONFIG_FILE = 1
 else #endif will end at end of load config.mk
 
+_MAKEFILE_DEFINED_VARIABLES := $(call file_defined_variables) _MAKEFILE_DEFINED_VARIABLES
+
 include $(_CONFIG_FILE)
+
+_USER_DEFINED_VARIABLES := $(filter-out $(_MAKEFILE_DEFINED_VARIABLES), $(call file_defined_variables))
+
+######### Verify unauthorized variables in config.mk
+
+_AUTHORIZED_VARIABLES_CONFIG :=
+_AUTHORIZED_VARIABLES_CONFIG += NAME
+_AUTHORIZED_VARIABLES_CONFIG += NAME_DEBUG
+_AUTHORIZED_VARIABLES_CONFIG += INC_FOLDER
+_AUTHORIZED_VARIABLES_CONFIG += SRC_FOLDER
+_AUTHORIZED_VARIABLES_CONFIG += BUILD_FOLDER
+_AUTHORIZED_VARIABLES_CONFIG += CC
+_AUTHORIZED_VARIABLES_CONFIG += CFLAGS_COMMON
+_AUTHORIZED_VARIABLES_CONFIG += CFLAGS_RELEASE
+_AUTHORIZED_VARIABLES_CONFIG += CFLAGS_DEBUG
+_AUTHORIZED_VARIABLES_CONFIG += LDFLAGS
+_AUTHORIZED_VARIABLES_CONFIG += LDLIBS
+_AUTHORIZED_VARIABLES_CONFIG += SRC
+
+_ERRORS_UNAUTHORIZED_VARIABLES := $(filter-out $(_AUTHORIZED_VARIABLES_CONFIG), $(_USER_DEFINED_VARIABLES))
+
+ifneq ($(_ERRORS_UNAUTHORIZED_VARIABLES),)
+_HAS_ERROR = 1
+_HAS_ERROR_UNAUTHORIZED_VARIABLES = 1
+endif
 
 ######### Verify missing variables in config.mk
 
@@ -172,14 +211,12 @@ _DEP := $(SRC:%.c=$(_BUILD_TARGET_FOLDER)%.d)
 
 ######### Verify missing files in config.mk
 
-rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
-
 _SRC_WILDCARDED := $(call rwildcard, $(patsubst %/,%,$(_SRC_FOLDER)), *.c)
 
-_SRC_SPEC_NO_EXISTS := $(sort $(filter-out $(_SRC_WILDCARDED), $(_SRC)))
-_SRC_EXISTS_NO_SPEC := $(sort $(filter-out $(_SRC), $(_SRC_WILDCARDED)))
+_ERRORS_SRC_SPEC_NO_EXISTS := $(sort $(filter-out $(_SRC_WILDCARDED), $(_SRC)))
+_ERRORS_SRC_EXISTS_NO_SPEC := $(sort $(filter-out $(_SRC), $(_SRC_WILDCARDED)))
 
-ifneq ($(strip $(_SRC_SPEC_NO_EXISTS) $(_SRC_EXISTS_NO_SPEC)),)
+ifneq ($(strip $(_ERRORS_SRC_SPEC_NO_EXISTS) $(_ERRORS_SRC_EXISTS_NO_SPEC)),)
 _HAS_ERROR = 1
 _HAS_ERROR_UNCONSISTENT_FILES = 1
 endif
@@ -201,15 +238,18 @@ ifeq ($(_HAS_ERROR),1)
 .PHONY: report_error
 report_error:
 ifeq ($(_HAS_ERROR_MISSING_CONFIG_FILE),1)
-	@ $(call print_missing_config_mk)
+	@ $(call _print_missing_config_mk)
+endif
+ifeq ($(_HAS_ERROR_UNAUTHORIZED_VARIABLES),1)
+	@ $(call _print_unauthorized_variables, $(_ERRORS_UNAUTHORIZED_VARIABLES))
 endif
 ifeq ($(_HAS_ERROR_MISSING_VARIABLES),1)
-	@ $(call print_missing_values, $(_ERRORS_MISSING_VARIABLES))
+	@ $(call _print_missing_variables, $(_ERRORS_MISSING_VARIABLES))
 endif
 ifeq ($(_HAS_ERROR_UNCONSISTENT_FILES),1)
-	@ $(call print_missing_files, $(_SRC_SPEC_NO_EXISTS), $(_SRC_EXISTS_NO_SPEC))
+	@ $(call _print_missing_files, $(_ERRORS_SRC_SPEC_NO_EXISTS), $(_ERRORS_SRC_EXISTS_NO_SPEC))
 endif
-	@ $(call print_end_error_reporting)
+	@ $(call _print_end_error_reporting)
 	@ false
 
 $(MAKECMDGOALS): report_error
@@ -233,7 +273,7 @@ endef
 else
 
 define cmd #1: command to run
-	($(1) && $(call print_cmd, $(strip $(1))))
+	($(1) && $(call _print_cmd, $(strip $(1))))
 endef
 
 endif
@@ -244,9 +284,9 @@ endif
 all: $(_NAME_TARGET)
 
 $(_NAME_TARGET): INIT $(_OBJ)
-	@ test $(_NB_TO_COMP) -ne 0 || $(call print_nothing_to_relink)
+	@ test $(_NB_TO_COMP) -ne 0 || $(call _print_nothing_to_relink)
 	@ test $(_NB_TO_COMP) -eq 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
-	@ test $(_NB_TO_COMP) -eq 0 || $(call print_name)
+	@ test $(_NB_TO_COMP) -eq 0 || $(call _print_name)
 
 ifdef COUNT_OBJS
 
@@ -259,7 +299,7 @@ $(_BUILD_TARGET_FOLDER)%.o: $(_SRC_FOLDER)%.c
 	@ mkdir -p $(dir $@)
 	@ $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) -c $< -o $@)
 	@ $(eval _NB_ACTU := $(shell echo $$(( $(_NB_ACTU) + 1 )) ))
-	@ $(call print_progress, $<)
+	@ $(call _print_progress, $<)
 
 endif
 
@@ -273,13 +313,13 @@ INIT:
 .PHONY: clean
 clean:
 	@ $(call cmd, rm -rf $(_BUILD_FOLDER))
-	@ $(call print_clean)
+	@ $(call _print_clean)
 
 .PHONY: fclean
 fclean: clean
 	@ $(call cmd, rm -f $(_NAME))
 	@ $(call cmd, rm -f $(_NAME_DEBUG))
-	@ $(call print_fclean)
+	@ $(call _print_fclean)
 
 .PHONY: re
 re: fclean all
