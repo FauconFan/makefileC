@@ -6,40 +6,47 @@ It has no dependencies except for the make utility itself. It doesn't use any sc
 
 These are the following features the makefile have:
 
- - Features:
-   - Recompile if necessary (C source files as well as header files)
-   - No link if no file needs to be recompiled
-   - Support basic rules: all clean fclean re
-   - Progress status during recompiling
-   - Multithread support (native makefile feature)
-   - Out-of-source builds
-   - Change compiler and flags (default is clang with warning flags on C17)
-   - Verbose mode with VERBOSE=1 `make VERBOSE=1`
-   - Error handling
-     - The config.mk file is missing
-     - Unauthorized variables are defined
-     - Specified files are missing
-     - Presence of unspecified files
-   - Debug mode `make debug` and `make redebug`
+- Support basic rules:
+  - `make` or `make all`: build the binary
+  - `make clean`: remove all binaries and generated files except the binary
+  - `make fclean`: remove all binaries and generated files
+  - `make re`: shortcut for make fclean && make all
+- Debug mode `make debug` and `make redebug`
+- Verbose mode with VERBOSE=1 `make VERBOSE=1 [target]` (prints out meaningful commands)
+- Compile or recompile only if necessary (C source files as well as header files)
+- If no file needs to be recompiled, nothing is done (no relink)
+- Progress status during (re)compiling
+- Multithread support (native makefile feature)
+- Out-of-source builds (the source and header directory is not altered in any way)
+- Configuration through a config file `config.mk`
+  - Specify names of final binaries (release and debug)
+  - Change compiler and flags (warnings, optimization, debug, standard, etc...)
+  - Specify source, build, and include directories names
+  - Lists all source files
+- Error handling
+  - The config.mk file is missing
+  - Unauthorized variables are defined
+  - Specified files are missing
+  - Presence of unspecified files
 
 Things that I don't want:
- - Automatic tracking of source files
- - Automatic tracking of header files
+- Automatic tracking of source files
+- Automatic tracking of header files
 
 Things that would be great it had but I don't need it at the moment:
- - Hierarchical projects and deployment
-   - Self init
-   - Self update (Autocheck new version from repository)
-   - makefile subprojects
-   - Support for libraries (static or dynamic)
-   - Install rule
- - Test and CI
-   - Unit test
-   - Black box tests (inputs / outputs behavior)
-   - Test coverage (from black box)
-   - Check memory leaks (from black box)
-   - Code quality controls
+- Hierarchical projects and deployment
+  - Self init
+  - Self update (Autocheck new version from repository)
+  - makefile subprojects
+  - Support for libraries (static or dynamic)
+  - Install rule
+- Test and CI
+  - Unit test
+  - Black box tests (inputs / outputs behavior)
+  - Test coverage (from black box)
+  - Check memory leaks (from black box)
+  - Code quality controls
 
 To do later:
- - check if variables are being redefined inside the config file and crash
- - check if NAME of NAME_DEBUG has a keyword value and crash
+- check if variables are being redefined inside the config file and crash
+- check if NAME of NAME_DEBUG has a keyword value and crash
