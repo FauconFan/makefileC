@@ -39,5 +39,4 @@ Things that would be great it had but I don't need it at the moment:
 
 todo:
  - check previous variables
- - crash when an error occured
  - check if one output file is a keyword

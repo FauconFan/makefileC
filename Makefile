@@ -68,34 +68,30 @@ define print_missing_config_mk
 	printf " %s[ INFO ]%s \`%s\` is missing\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)"
-	printf " %s[ INFO ]%s stopping\\n" \
-		"$(_CYAN)" "$(_END)"
 endef
 
-define print_errors # 1:list of missing variables
+define print_missing_values # 1:list of missing variables
 	$(foreach err,$(1),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(err)";)
-	printf " %s[ INFO ]%s change your \`%s\` file accordingly\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_CONFIG_FILE)"
-	printf " %s[ INFO ]%s stopping\\n" \
-		"$(_CYAN)" "$(_END)"
 endef
 
 define print_missing_files # 1:list of files in spec but no exist, 2:list of files that exist but not in spec
-	$(foreach file, $(1), printf " %s[ INFO ]%s This file is in \`%s\` but doesn't exist: %s\\n" \
+	$(foreach file, $(1), printf " %s[ INFO ]%s This file is in the config file (\`%s\`) but doesn't exist: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)" \
 		"$(file)";)
-	$(foreach file, $(2), printf " %s[ INFO ]%s This file exists but is not in \`%s\`: %s\\n" \
+	$(foreach file, $(2), printf " %s[ INFO ]%s This file exists but it isn't in the config file (\`%s\`): %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)" \
 		"$(file)";)
-	printf " %s[ INFO ]%s change your \`%s\` file accordingly\\n" \
+endef
+
+define print_end_error_reporting
+	printf " %s[ INFO ]%s create or change your \`%s\` file accordingly\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)"
-	printf " %s[ INFO ]%s stopping\\n" \
+	printf " %s[ INFO ]%s aborting\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
 
@@ -105,52 +101,53 @@ endef
 #########                                                            ##########
 ###############################################################################
 
-_CONFIG_FILE = ./config.mk
+_HAS_ERROR                      := 0
+_HAS_ERROR_MISSING_CONFIG_FILE  := 0
+_HAS_ERROR_MISSING_VARIABLES    := 0
+_HAS_ERROR_UNCONSISTENT_FILES   := 0
+
+_CONFIG_FILE := ./config.mk
 
 ######### Include `config.mk`
 
 ifeq ($(wildcard $(_CONFIG_FILE)),)
-.PHONY: error_missing_file
-error_missing_file:
-	@ $(call print_missing_config_mk)
-	@ false
-else
+_HAS_ERROR = 1
+_HAS_ERROR_MISSING_CONFIG_FILE = 1
+else #endif will end at end of load config.mk
+
 include $(_CONFIG_FILE)
-endif
 
 ######### Verify missing variables in config.mk
 
-_ERRORS :=
+_ERRORS_MISSING_VARIABLES :=
 
-_ERRORS += $(if $(value NAME),,NAME)
-_ERRORS += $(if $(value NAME_DEBUG),,NAME_DEBUG)
-_ERRORS += $(if $(value INC_FOLDER),,INC_FOLDER)
-_ERRORS += $(if $(value SRC_FOLDER),,SRC_FOLDER)
-_ERRORS += $(if $(value BUILD_FOLDER),,BUILD_FOLDER)
-_ERRORS += $(if $(value SRC),,SRC)
+_ERRORS_MISSING_VARIABLES += $(if $(value NAME),,NAME)
+_ERRORS_MISSING_VARIABLES += $(if $(value NAME_DEBUG),,NAME_DEBUG)
+_ERRORS_MISSING_VARIABLES += $(if $(value INC_FOLDER),,INC_FOLDER)
+_ERRORS_MISSING_VARIABLES += $(if $(value SRC_FOLDER),,SRC_FOLDER)
+_ERRORS_MISSING_VARIABLES += $(if $(value BUILD_FOLDER),,BUILD_FOLDER)
+_ERRORS_MISSING_VARIABLES += $(if $(value SRC),,SRC)
 
-ifneq ($(strip $(_ERRORS)),)
-.PHONY: error_missing_variables
-error_missing_variables:
-	@ $(call print_errors, $(_ERRORS))
-	@ false
-endif
+ifneq ($(strip $(_ERRORS_MISSING_VARIABLES)),)
+_HAS_ERROR = 1
+_HAS_ERROR_MISSING_VARIABLES = 1
+else #endif will end at end of load config.mk
 
 ######### Define variables
 
 DEBUG   ?= 0
 VERBOSE ?= 0
 
-_NAME := $(strip $(NAME))
-_NAME_DEBUG := $(strip $(NAME_DEBUG))
-_INC_FOLDER := $(strip $(INC_FOLDER))
-_SRC_FOLDER := $(strip $(SRC_FOLDER))
-_BUILD_FOLDER := $(strip $(BUILD_FOLDER))
+_NAME                 := $(strip $(NAME))
+_NAME_DEBUG           := $(strip $(NAME_DEBUG))
+_INC_FOLDER           := $(strip $(INC_FOLDER))
+_SRC_FOLDER           := $(strip $(SRC_FOLDER))
+_BUILD_FOLDER         := $(strip $(BUILD_FOLDER))
 
-_NAME_TARGET := $(if $(filter 0, $(DEBUG)),$(_NAME),$(_NAME_DEBUG))
-_TARGET      := $(if $(filter 0, $(DEBUG)),release,debug)
+_NAME_TARGET          := $(if $(filter 0, $(DEBUG)),$(_NAME),$(_NAME_DEBUG))
+_TARGET               := $(if $(filter 0, $(DEBUG)),release,debug)
 
-_BUILD_TARGET_FOLDER := $(subst /,,$(_BUILD_FOLDER))/$(_TARGET)/
+_BUILD_TARGET_FOLDER  := $(subst /,,$(_BUILD_FOLDER))/$(_TARGET)/
 
 ######### Default values if not set by default
 
@@ -158,14 +155,14 @@ CFLAGS_COMMON  ?= -Wall -Wextra -Werror -Weverything -pedantic -std=c17
 CFLAGS_RELEASE ?= -O2 -DNDEBUG
 CFLAGS_DEBUG   ?= -O0 -DDEBUG -ggdb
 
-CFLAGS_COMMON += -MMD
+CFLAGS_COMMON  += -MMD
 
-_CC := $(if $(filter-out $(origin CC),default),$(CC),clang)
-_IFLAGS := -I $(_INC_FOLDER)
-_LDFLAGS := $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
-_LDLIBS := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
+_CC         := $(if $(filter-out $(origin CC),default),$(CC),clang)
+_IFLAGS     := -I $(_INC_FOLDER)
+_LDFLAGS    := $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
+_LDLIBS     := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
-_CFLAGS := $(CFLAGS_COMMON) $(if $(filter 0, $(DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
+_CFLAGS     := $(CFLAGS_COMMON) $(if $(filter 0, $(DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
 
 ######### Generating variables for files
 
@@ -183,11 +180,41 @@ _SRC_SPEC_NO_EXISTS := $(sort $(filter-out $(_SRC_WILDCARDED), $(_SRC)))
 _SRC_EXISTS_NO_SPEC := $(sort $(filter-out $(_SRC), $(_SRC_WILDCARDED)))
 
 ifneq ($(strip $(_SRC_SPEC_NO_EXISTS) $(_SRC_EXISTS_NO_SPEC)),)
-.PHONY: error_missing_files
-error_missing_files:
-	@ $(call print_missing_files, $(_SRC_SPEC_NO_EXISTS), $(_SRC_EXISTS_NO_SPEC))
-	@ false
+_HAS_ERROR = 1
+_HAS_ERROR_UNCONSISTENT_FILES = 1
 endif
+
+endif #endif for errors missing variables
+endif #endif of include _CONFIG_FILE
+
+###############################################################################
+#########                                                            ##########
+#########                       ERROR REPORTING                      ##########
+#########                                                            ##########
+###############################################################################
+
+ifeq ($(_HAS_ERROR),1)
+
+.DEFAULT_GOAL: report_error
+.DEFAULT: report_error
+
+.PHONY: report_error
+report_error:
+ifeq ($(_HAS_ERROR_MISSING_CONFIG_FILE),1)
+	@ $(call print_missing_config_mk)
+endif
+ifeq ($(_HAS_ERROR_MISSING_VARIABLES),1)
+	@ $(call print_missing_values, $(_ERRORS_MISSING_VARIABLES))
+endif
+ifeq ($(_HAS_ERROR_UNCONSISTENT_FILES),1)
+	@ $(call print_missing_files, $(_SRC_SPEC_NO_EXISTS), $(_SRC_EXISTS_NO_SPEC))
+endif
+	@ $(call print_end_error_reporting)
+	@ false
+
+$(MAKECMDGOALS): report_error
+
+else # will end at end of Makefile
 
 ###############################################################################
 #########                                                            ##########
@@ -270,3 +297,5 @@ endif
 .PHONY: redebug
 redebug:
 	@ $(MAKE) --no-print-directory DEBUG=1 re
+
+endif #endif of error reporting
