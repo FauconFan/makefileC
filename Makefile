@@ -1,11 +1,15 @@
 
 SELF_URL_GIT = https://github.com/fauconfan/makefileC
 SELF_URL_MAKEFILE = https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile
-SELF_URL_MAKEFILE_FILE_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.files.mk
+SELF_URL_MAKEFILE_FILE_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk
 
-#########
-# Define termcap values if possible
-#########
+###############################################################################
+#########                                                            ##########
+#########                           PRELUDE                          ##########
+#########                                                            ##########
+###############################################################################
+
+######### Define termcap values if possible
 
 _RED=$(shell tput setaf 1 2> /dev/null || echo -n "")
 _GREEN=$(shell tput setaf 2 2> /dev/null || echo -n "")
@@ -16,9 +20,7 @@ _CYAN=$(shell tput setaf 6 2> /dev/null || echo -n "")
 _WHITE=$(shell tput setaf 7 2> /dev/null || echo -n "")
 _END=$(shell tput sgr0 2> /dev/null || echo -n "")
 
-#########
-# Define print functions
-#########
+######### Define print functions
 
 define print_name
 	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" \
@@ -63,8 +65,9 @@ define print_fclean
 endef
 
 define print_missing_files_mk
-	printf " %s[ INFO ]%s \`files.mk\` is missing\\n" \
-		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s \`%s\` is missing\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)"
 	printf " %s[ INFO ]%s stopping\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
@@ -73,43 +76,49 @@ define print_errors # 1:list of missing variables
 	$(foreach err,$(1),printf " %s[ INFO ]%s Variable not defined: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(err)";)
-	printf " %s[ INFO ]%s change your \`files.mk\` file accordingly\\n" \
-		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s change your \`%s\` file accordingly\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)"
 	printf " %s[ INFO ]%s stopping\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
 
 define print_missing_files # 1:list of files in spec but no exist, 2:list of files that exist but not in spec
-	$(foreach file, $(1), printf " %s[ INFO ]%s This file is in \`files.mk\` but doesn't exist: %s\\n" \
+	$(foreach file, $(1), printf " %s[ INFO ]%s This file is in \`%s\` but doesn't exist: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)" \
 		"$(file)";)
-	$(foreach file, $(2), printf " %s[ INFO ]%s This file exists but is not in \`files.mk\`: %s\\n" \
+	$(foreach file, $(2), printf " %s[ INFO ]%s This file exists but is not in \`%s\`: %s\\n" \
 		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)" \
 		"$(file)";)
-	printf " %s[ INFO ]%s change your \`files.mk\` file accordingly\\n" \
-		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s change your \`%s\` file accordingly\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)"
 	printf " %s[ INFO ]%s stopping\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
 
+###############################################################################
+#########                                                            ##########
+#########                      LOAD `config.mk`                      ##########
+#########                                                            ##########
+###############################################################################
 
-#########
-# Include files.mk
-#########
+_CONFIG_FILE = ./config.mk
 
-# Verify missing files.mk
-ifeq ($(wildcard ./files.mk),)
-.PHONY: error_missing_files
-error_missing_files:
+######### Include `config.mk`
+
+ifeq ($(wildcard $(_CONFIG_FILE)),)
+.PHONY: error_missing_file
+error_missing_file:
 	@ $(call print_missing_files_mk)
 	@ false
 else
-include files.mk
+include $(_CONFIG_FILE)
 endif
 
-#########
-# Check consistency of files.mk
-#########
+######### Verify missing variables in config.mk
 
 _ERRORS :=
 
@@ -120,7 +129,6 @@ _ERRORS += $(if $(value SRC_FOLDER),,SRC_FOLDER)
 _ERRORS += $(if $(value BUILD_FOLDER),,BUILD_FOLDER)
 _ERRORS += $(if $(value SRC),,SRC)
 
-# Verify missing variables in files.mk
 ifneq ($(strip $(_ERRORS)),)
 .PHONY: error_missing_variables
 error_missing_variables:
@@ -128,9 +136,7 @@ error_missing_variables:
 	@ false
 endif
 
-#########
-# Define variables
-#########
+######### Define variables
 
 DEBUG   ?= 0
 VERBOSE ?= 0
@@ -146,7 +152,8 @@ _TARGET      := $(if $(filter 0, $(DEBUG)),release,debug)
 
 _BUILD_TARGET_FOLDER := $(subst /,,$(_BUILD_FOLDER))/$(_TARGET)/
 
-# Default values if set by default
+######### Default values if not set by default
+
 CFLAGS_COMMON  ?= -Wall -Wextra -Werror -Weverything -pedantic -std=c17
 CFLAGS_RELEASE ?= -O2 -DNDEBUG
 CFLAGS_DEBUG   ?= -O0 -DDEBUG -ggdb
@@ -160,12 +167,14 @@ _LDLIBS := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
 _CFLAGS := $(CFLAGS_COMMON) $(if $(filter 0, $(DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
 
-# Generating variables for files
+######### Generating variables for files
+
 _SRC := $(SRC:%.c=$(_SRC_FOLDER)%.c)
 _OBJ := $(SRC:%.c=$(_BUILD_TARGET_FOLDER)%.o)
 _DEP := $(SRC:%.c=$(_BUILD_TARGET_FOLDER)%.d)
 
-# Verify missing files in files.mk
+######### Verify missing files in config.mk
+
 rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
 _SRC_WILDCARDED := $(call rwildcard, $(patsubst %/,%,$(_SRC_FOLDER)), *.c)
@@ -180,11 +189,14 @@ error_missing_files:
 	@ false
 endif
 
-#########
-# Standard rules
-#########
+###############################################################################
+#########                                                            ##########
+#########                            RULES                           ##########
+#########                                                            ##########
+###############################################################################
 
-# Manage verbose
+######### Manage verbose
+
 ifeq ($(VERBOSE),0)
 
 define cmd #1: command to run
@@ -198,6 +210,8 @@ define cmd #1: command to run
 endef
 
 endif
+
+######### Core rules
 
 .PHONY: all
 all: $(_NAME_TARGET)
@@ -242,6 +256,8 @@ fclean: clean
 
 .PHONY: re
 re: fclean all
+
+######### Manage debug
 
 .PHONY: debug
 debug:
