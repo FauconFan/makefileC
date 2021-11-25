@@ -1,6 +1,7 @@
 
 # Name of the binary
 NAME = output
+NAME_DEBUG = output-debug
 
 # Folder constants
 ## folder that contains the headers files [.h]
@@ -14,7 +15,9 @@ BUILD_FOLDER = build/
 ## CC compiler
 CC = clang
 ## C Flags
-CFLAGS = -Wall -Wextra -Werror -Weverything -pedantic -O2 -std=c17
+CFLAGS_COMMON = -Wall -Wextra -Werror -Weverything -pedantic -std=c17
+CFLAGS_RELEASE = -O2 -DNDEBUG
+CFLAGS_DEBUG = -O0 -ggdb -DDEBUG
 ## LD Flags
 LDFLAGS =
 ## Libs Flags

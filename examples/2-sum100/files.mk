@@ -1,6 +1,7 @@
 
 # Name of the binary
 NAME = sum100
+NAME_DEBUG = sum100-debug
 
 INC_FOLDER = inc/		# folder that contains the headers files [.h]
 SRC_FOLDER = src/		# folder that contains the source files [.c]
