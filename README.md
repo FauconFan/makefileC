@@ -37,7 +37,7 @@ Things that would be great it had but I don't need it at the moment:
 - Hierarchical projects and deployment
   - Self init
   - Self update (Autocheck new version from repository)
-  - makefile subprojects
+  - Subprojects
   - Support for libraries (static or dynamic)
   - Install rule
 - Test and CI
@@ -48,5 +48,5 @@ Things that would be great it had but I don't need it at the moment:
   - Code quality controls
 
 To do later:
-- check if variables are being redefined inside the config file and crash
-- check if NAME of NAME_DEBUG has a keyword value and crash
+- Check if variables are being redefined inside the config file and report error
+- Check if NAME of NAME_DEBUG has a keyword value and report error
