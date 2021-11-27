@@ -1,10 +1,12 @@
-# The ultimate makefile I wish I had for C development
+# The ultimate makefile
 
-This makefile is quite simply the ultimate makefile that I wish I had when I start developing in C.
+This makefile is quite simply the ultimate makefile I wish I had when I started developing in C.
 
-It has no dependencies except for the make utility itself. It doesn't use any scripting language under the hood and does it all on its own.
+## Characteristics
 
-These are the following features the makefile have:
+The ultimate makefile must be ***intuitive***, ***simple***, ***configurable***, ***easy to understand*** and finally and most importantlty ***practical***.
+
+## Features
 
 - Support basic rules:
   - `make` or `make all`: build the binary
