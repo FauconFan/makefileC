@@ -1,0 +1,51 @@
+
+Questions:
+	☐ Implement Cpp as well
+	☐ Check GNU Convention https://www.gnu.org/software/make/manual/html_node/Makefile-Conventions.html#Makefile-Conventions
+	☐ State of art for static analazers and linters
+	☐ State of art for unit testing and black box testing
+
+Core Features:
+	✔ basic rules all, clean, fclean, re @done(21-11-27 12:26)
+	✔ make (re)debug @done(21-11-27 12:26)
+	✔ make VERBOSE=1 @done(21-11-27 12:26)
+	✔ Compile if necessary (C and H) @done(21-11-27 12:26)
+	✔ Progress status @done(21-11-27 12:26)
+	✔ Multithread @done(21-11-27 12:26)
+	✔ Out-of-source @done(21-11-27 12:26)
+	☐ Document Configuration
+	☐ Check prerequisites of the makefile
+
+	Tests:
+		☐ Test each utility through a pipeline
+
+	Examples:
+		☐ Implement a small utility to copy files and directories with GUI
+		☐ Implement a small utility to generate fractals with GUI
+
+	Error Handling:
+		✔ Config file is missing @done(21-11-27 12:28)
+		✔ Unauthorized variables are defined @done(21-11-27 12:28)
+		✔ Specified files are missing @done(21-11-27 12:28)
+		✔ Presence of unspecified files @done(21-11-27 12:28)
+		☐ Check if variables are being redefined in config file (check if valuable)
+		☐ Check if NAME or NAME_DEBUG is a keywork in the Makefile definition
+
+Extensions:
+	Hierarchical projects and deployments:
+		☐ Self init
+		☐ Self update (autocheck if new version)
+		☐ Subprojects (call and indentation)
+		☐ Support for libraries (static or dynamic)
+		☐ Install/Uninstall rule
+
+	Test and CI:
+		☐ Create a dockerfile that is easily changeable, upon configuration
+		☐ Unit tests (white box tests)
+		☐ Black box tests (inputs / outputs / behavior)
+		☐ Test coverage report (from tests)
+		☐ Check memory leaks (from tests)
+
+Unprioritized:
+	☐ Support Windows and MacOS
+	☐ Whole documentation

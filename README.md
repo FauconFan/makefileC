@@ -33,20 +33,5 @@ Things that I don't want:
 - Automatic tracking of source files
 - Automatic tracking of header files
 
-Things that would be great it had but I don't need it at the moment:
-- Hierarchical projects and deployment
-  - Self init
-  - Self update (Autocheck new version from repository)
-  - Subprojects
-  - Support for libraries (static or dynamic)
-  - Install rule
-- Test and CI
-  - Unit test
-  - Black box tests (inputs / outputs behavior)
-  - Test coverage (from black box)
-  - Check memory leaks (from black box)
-  - Code quality controls
-
-To do later:
-- Check if variables are being redefined inside the config file and report error
-- Check if NAME of NAME_DEBUG has a keyword value and report error
+This is the current state of this project management project.  
+A more precise list of feature and incoming features is done in a file called `.todo`.
