@@ -4,8 +4,14 @@ runs:
   using: "composite"
   steps:
     - run: make -C "examples/1-hello-world" all
+      shell: bash
     - run: make -C "examples/1-hello-world" clean
+      shell: bash
     - run: make -C "examples/1-hello-world" fclean
+      shell: bash
     - run: make -C "examples/1-hello-world" re
+      shell: bash
     - run: make -C "examples/1-hello-world" debug
+      shell: bash
     - run: make -C "examples/1-hello-world" redebug
+      shell: bash
