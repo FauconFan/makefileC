@@ -1,9 +1,8 @@
-name: test2
+name: Test Each Example
 on: [ push, pull_request ]
 jobs:
-  main:
+  1-hello-world:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: ls -l
-      - run: echo "yeaaaaaaaaaaaaah"
+      - all: make -C 'examples/1-hello-world' all
