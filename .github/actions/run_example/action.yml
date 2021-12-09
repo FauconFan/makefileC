@@ -9,9 +9,10 @@ runs:
   using: "composite"
   steps:
     - run: make all
+      name: make all
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - run: ./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs)
+    - run: ./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs) > /tmp/output
       shell: bash
       working-directory: ${{ inputs.folder-path }}
     - run: make clean
