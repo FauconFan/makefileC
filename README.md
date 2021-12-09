@@ -107,4 +107,4 @@ Once all the Necessary Variables are available, a few commands are available:
 There are also two additional variables that can be provided through command line: VERBOSE and DEBUG. These variables looks like boolean variables, their values are either 0 or 1. Their both values are 0 by default.
 
 If VERBOSE is enabled, meaningful commands are printed. A non-meaningful command is a print command, creating directories, ...  
-If DEBUG is enabled, all commands are printed. This is usefell when maintaining this subject.
+If DEBUG is enabled, all commands are printed. This is useful when maintaining this subject.
