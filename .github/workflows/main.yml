@@ -1,48 +1,17 @@
 name: Main
 on: [ push, pull_request ]
 jobs:
-  example-1-hello-world:
+
+  example:
+    matrix:
+      folder: ["examples/1-hello-world", "examples/2-sum100"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/run_example
         with:
-          folder-path: 'examples/1-hello-world'
-  example-2-sum100:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/run_example
-        with:
-          folder-path: 'examples/2-sum100'
-  example-3-fibonacci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/run_example
-        with:
-          folder-path: 'examples/3-fibonacci'
-  example-4-fib-gcc:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/run_example
-        with:
-          folder-path: 'examples/4-fib-gcc'
-  example-5-subdirs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/run_example
-        with:
-          folder-path: 'examples/5-subdirs'
-  example-6-debug:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/run_example
-        with:
-          folder-path: 'examples/6-debug'
+          folder-path: ${{ matrix.folder }}
+
   regressiontest-equals6:
     runs-on: ubuntu-latest
     steps:
