@@ -104,7 +104,8 @@ Once all the Necessary Variables are available, a few commands are available:
 - `make debug`: Same as `make all` except it uses debug flags
 - `make redebug`: Alias for `make fclean && make debug`
 
-There are also two additional variables that can be provided through command line: VERBOSE and DEBUG. These variables looks like boolean variables, their values are either 0 or 1. Their both values are 0 by default.
+There are also one additional variable that can be provided through command line: VERBOSE. This variable look like a boolean variable, its value is either 0 or 1. Its default value is 0.
 
-If VERBOSE is enabled, meaningful commands are printed. A non-meaningful command is a print command, creating directories, ...  
-If DEBUG is enabled, all commands are printed. This is useful when maintaining this subject.
+If VERBOSE is enabled, meaningful commands are printed. A non-meaningful command is a print command, creating directories, ... 
+
+ex: `make re VERBOSE=1`
