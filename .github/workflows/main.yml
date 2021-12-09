@@ -1,4 +1,4 @@
-name: All Examples
+name: Main
 on: [ push, pull_request ]
 jobs:
   example-1-hello-world:
