@@ -6,23 +6,11 @@ inputs:
     required: 'false'
     default: '.'
 runs:
+  strategy:
+    matrix:
+      rule: ["all", "clean", "fclean", "re", "debug", "redebug"]
   using: "composite"
   steps:
-    - run: make all
-      shell: bash
-      working-directory: ${{ inputs.folder-path }}
-    - run: make clean
-      shell: bash
-      working-directory: ${{ inputs.folder-path }}
-    - run: make fclean
-      shell: bash
-      working-directory: ${{ inputs.folder-path }}
-    - run: make re
-      shell: bash
-      working-directory: ${{ inputs.folder-path }}
-    - run: make debug
-      shell: bash
-      working-directory: ${{ inputs.folder-path }}
-    - run: make redebug
+    - run: make ${{ matrix.rule }}
       shell: bash
       working-directory: ${{ inputs.folder-path }}
