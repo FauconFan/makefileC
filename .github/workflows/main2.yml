@@ -1,4 +1,4 @@
-name: test
+name: test2
 on: [ push, pull_request ]
 jobs:
   main:
@@ -6,10 +6,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: ls -l
-      - run: echo "yeaaaaaaaaaaaaah"
-  main2:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: ls -lR
       - run: echo "yeaaaaaaaaaaaaah"
