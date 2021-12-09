@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - all: make -C 'examples/1-hello-world' all
+      - run: make -C 'examples/1-hello-world' all
