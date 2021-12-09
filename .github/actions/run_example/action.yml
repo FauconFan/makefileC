@@ -8,11 +8,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: make all
+    - id: make all
       run: make all
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - name: 'register release output for later'
+    - id: 'register release output for later'
       run: ./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs) > /tmp/release_output
       shell: bash
       working-directory: ${{ inputs.folder-path }}
