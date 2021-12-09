@@ -1,17 +1,28 @@
 name: Reusable run example
 on: [ workflow_call ]
+inputs:
+  folder-path:
+    description: 'folder path where we want to run the tests'
+    required: 'false'
+    default: '.'
 runs:
   using: "composite"
   steps:
-    - run: make -C "examples/1-hello-world" all
+    - run: make all
       shell: bash
-    - run: make -C "examples/1-hello-world" clean
+      working-directory: ${{ inputs.folder-path }}
+    - run: make clean
       shell: bash
-    - run: make -C "examples/1-hello-world" fclean
+      working-directory: ${{ inputs.folder-path }}
+    - run: make fclean
       shell: bash
-    - run: make -C "examples/1-hello-world" re
+      working-directory: ${{ inputs.folder-path }}
+    - run: make re
       shell: bash
-    - run: make -C "examples/1-hello-world" debug
+      working-directory: ${{ inputs.folder-path }}
+    - run: make debug
       shell: bash
-    - run: make -C "examples/1-hello-world" redebug
+      working-directory: ${{ inputs.folder-path }}
+    - run: make redebug
       shell: bash
+      working-directory: ${{ inputs.folder-path }}

@@ -5,4 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: .github/actions/run_example
+      - uses: ./.github/actions/run_example
+        with:
+          folder-path: 'examples/1-hello-world'
