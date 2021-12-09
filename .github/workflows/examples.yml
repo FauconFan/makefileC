@@ -1,7 +1,7 @@
 name: Test Each Example
 on: [ push, pull_request ]
 jobs:
-  1_hello_world:
+  1helloworld:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
