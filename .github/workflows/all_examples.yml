@@ -47,4 +47,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: test "$(ls -1 examples | wc -l)" -eq 6
+      - run: test "$(ls -1 examples | wc -l)" -eq 7
