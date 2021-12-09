@@ -1,0 +1,12 @@
+name: Reusable run example
+on: [ workflow_call ]
+jobs:
+  example_run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: make -C "examples/1-hello-world" all
+      - run: make -C "examples/1-hello-world" clean
+      - run: make -C "examples/1-hello-world" fclean
+      - run: make -C "examples/1-hello-world" re
+      - run: make -C "examples/1-hello-world" debug
+      - run: make -C "examples/1-hello-world" redebug

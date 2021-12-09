@@ -1,0 +1,8 @@
+name: All Examples
+on: [ push, pull_request ]
+jobs:
+  example-1-hello-world:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/run_example@v1
