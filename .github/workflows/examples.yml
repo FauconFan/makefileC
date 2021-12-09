@@ -6,3 +6,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: make -C 'examples/1-hello-world' all
+      - run: make -C 'examples/1-hello-world' clean
+      - run: make -C 'examples/1-hello-world' fclean
+      - run: make -C 'examples/1-hello-world' re
+      - run: make -C 'examples/1-hello-world' debug
+      - run: make -C 'examples/1-hello-world' redebug
