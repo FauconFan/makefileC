@@ -48,6 +48,21 @@ runs:
       shell: bash
       working-directory: ${{ inputs.folder-path }}
 
+    - name: check diff between old output and binary after re
+      run: diff <(./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs)) /tmp/release_output
+      shell: bash
+      working-directory: ${{ inputs.folder-path }}
+
+    - name: make fclean
+      run: make fclean
+      shell: bash
+      working-directory: ${{ inputs.folder-path }}
+
+    - name: check diff between old project architecture and the actual project architecture
+      run: diff <(ls -lRS) /tmp/tree_hierarchy
+      shell: bash
+      working-directory: ${{ inputs.folder-path }}
+
     - name: make debug
       run: make debug
       shell: bash
