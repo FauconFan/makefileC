@@ -1,8 +1,8 @@
 name: test
-on: [ push, pull_request ]
+on: [ push ]
 jobs:
   main:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: ls -l
