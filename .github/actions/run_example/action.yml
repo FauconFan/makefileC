@@ -8,26 +8,47 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - id: make all
+    - name: register project architecture for later
+      run: ls -lRS > /tmp/tree_hierarchy
+      shell: bash
+      working-directory: ${{ inputs.folder-path }}
+
+    - name: make all
       run: make all
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - id: 'register release output for later'
+
+    - name: register release output for later
       run: ./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs) > /tmp/release_output
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - run: make clean
+
+    - name: make clean
+      run: make clean
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - run: make fclean
+
+    - name: check diff between old output and binary after cleaned
+      run: diff $(./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs)) /tmp/release_output
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - run: make re
+
+    - name: make fclean
+      run: make fclean
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - run: make debug
+
+    - name: make re
+      run: make re
       shell: bash
       working-directory: ${{ inputs.folder-path }}
-    - run: make redebug
+
+    - name: make debug
+      run: make debug
+      shell: bash
+      working-directory: ${{ inputs.folder-path }}
+
+    - name: make redebug
+      run: make redebug
       shell: bash
       working-directory: ${{ inputs.folder-path }}
