@@ -38,6 +38,11 @@ runs:
       shell: bash
       working-directory: ${{ inputs.folder-path }}
 
+    - name: check diff between old project architecture and the actual project architecture
+      run: diff <(ls -lRS) /tmp/tree_hierarchy
+      shell: bash
+      working-directory: ${{ inputs.folder-path }}
+
     - name: make re
       run: make re
       shell: bash
