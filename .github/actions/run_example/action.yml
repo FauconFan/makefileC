@@ -11,6 +11,9 @@ runs:
     - run: make all
       shell: bash
       working-directory: ${{ inputs.folder-path }}
+    - run: $(grep NAME < config.mk | cut -d'=' -f2)
+      shell: bash
+      working-directory: ${{ inputs.folder-path }}
     - run: make clean
       shell: bash
       working-directory: ${{ inputs.folder-path }}
