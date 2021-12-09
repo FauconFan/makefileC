@@ -43,3 +43,8 @@ jobs:
       - uses: ./.github/actions/run_example
         with:
           folder-path: 'examples/6-debug'
+  regressiontest-equals6:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        run: test "$(ls -1 examples | wc -l)" -eq 6
