@@ -3,8 +3,9 @@ on: [ push, pull_request ]
 jobs:
 
   example:
-    matrix:
-      folder: ["examples/1-hello-world", "examples/2-sum100"]
+    strategy:
+      matrix:
+        folder: ["examples/1-hello-world", "examples/2-sum100"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
