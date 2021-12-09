@@ -5,9 +5,16 @@ jobs:
   functional_tests:
     strategy:
       matrix:
-        folder: ["examples/1-hello-world", "examples/2-sum100"]
+        folder: [
+          "examples/1-hello-world",
+          "examples/2-sum100",
+          "examples/3-fibonacci",
+          "examples/4-fib-gcc",
+          "examples/5-subdirs",
+          "examples/6-debug"
+        ]
     runs-on: ubuntu-latest
-    name: Functional test run on ${{ matrix.folder }}
+    name: On ${{ matrix.folder }}
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/run_example
