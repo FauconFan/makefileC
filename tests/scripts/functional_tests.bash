@@ -34,7 +34,7 @@ make fclean # resets
 
 make all > /tmp/build_all
 make fclean
-make all 
+make all
 
 ## Check tree and output consistency on release build
 make all
