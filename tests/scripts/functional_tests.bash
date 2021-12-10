@@ -5,15 +5,36 @@ set -eux
 NAME="./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs)"
 NAME_DEBUG="./$(grep NAME_DEBUG < config.mk | cut -d'=' -f2 | xargs)"
 
+ALL_RULES="all clean fclean re debug redebug"
+
 ls -lRs > /tmp/tree_hierarchy					# register project architecture for later
 
 ## Check all availables commands
-make all
-make clean
+for rule in ${ALL_RULES}
+do
+	make "${rule}"
+done
+
+## Check verbosity
+for rule in ${ALL_RULES}
+do
+	make fclean
+	make "${rule}" > "/tmp/build_${rule}"
+	make fclean
+	make "${rule}" VERBOSE=1 > "/tmp/build_${rule}_verbose"
+
+	diff "/tmp/build_${rule}" <(grep -v CMD < "/tmp/build_${rule}_verbose")
+	test "$(wc -l < "/tmp/build_${rule}")" -lt "$(wc -l < "/tmp/build_${rule}_verbose")"
+
+	rm -f "/tmp/build_${rule}" "/tmp/build_${rule}_verbose"
+done
+
+make fclean # resets
+
+
+make all > /tmp/build_all
 make fclean
-make re
-make debug
-make redebug
+make all 
 
 ## Check tree and output consistency on release build
 make all
