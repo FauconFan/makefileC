@@ -2,6 +2,8 @@ name: Main
 on: [ push, pull_request ]
 jobs:
 
+  # If the following test fails, it means the number of examples have changed
+  # Modify this test, and the list of examples in test 'Functional_Tests'
   Functional_Tests_Regression:
     runs-on: ubuntu-latest
     steps:
@@ -15,16 +17,16 @@ jobs:
       fail-fast: false
       matrix:
         folder: [
-          "examples/1-hello-world",
-          "examples/2-sum100",
-          "examples/3-fibonacci",
-          "examples/4-fib-gcc",
-          "examples/5-subdirs",
-          "examples/6-debug"
+          "1-hello-world",
+          "2-sum100",
+          "3-fibonacci",
+          "4-fib-gcc",
+          "5-subdirs",
+          "6-debug"
         ]
     name: On ${{ matrix.folder }}
     steps:
       - uses: actions/checkout@v2
       - run: ../../tests/scripts/functional_tests.bash
         shell: bash
-        working-directory: ${{ matrix.folder }}
+        working-directory: examples/${{ matrix.folder }}
