@@ -8,8 +8,8 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 ALL_RULES="all clean fclean re debug redebug"
 NAME="./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs)"
 NAME_DEBUG="./$(grep NAME_DEBUG < config.mk | cut -d'=' -f2 | xargs)"
-SRC_FOLDER="$(grep SRC_FOLDER config.mk | cut -d'=' -f2 | xargs)"
-INC_FOLDER="$(grep INC_FOLDER config.mk | cut -d'=' -f2 | xargs)"
+SRC_FOLDER="$(grep "SRC_FOLDER *=" config.mk | cut -d'=' -f2 | xargs)"
+INC_FOLDER="$(grep "INC_FOLDER *=" config.mk | cut -d'=' -f2 | xargs)"
 
 export ALL_RULES
 export NAME
