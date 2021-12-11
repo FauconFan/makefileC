@@ -2,7 +2,7 @@ name: Main
 on: [ push, pull_request ]
 jobs:
 
-  functional_tests_regression:
+  Functional_Tests_Regression:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
