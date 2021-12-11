@@ -4,6 +4,7 @@ jobs:
 
   functional_tests:
     strategy:
+      name: Functional Tests
       fail-fast: false
       matrix:
         folder: [
