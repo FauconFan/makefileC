@@ -1,6 +1,18 @@
 name: Main
 on: [ push, pull_request ]
 jobs:
+  Units:
+    runs-on: ubuntu-latest
+    matrix:
+      folder: [
+        "1-minimal"
+      ]
+    name: On tests/units/${{ matrix.folder }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./test.bash
+        shell: bash
+        working-directory: tests/units/${{ matrix.folder }}
 
   # If the following test fails, it means the number of examples have changed
   # Modify this test, and the list of examples in test 'Functional_Tests'
@@ -24,7 +36,7 @@ jobs:
           "5-subdirs",
           "6-debug"
         ]
-    name: On ${{ matrix.folder }}
+    name: On examples/${{ matrix.folder }}
     steps:
       - uses: actions/checkout@v2
       - run: ../../tests/scripts/functional_tests.bash
