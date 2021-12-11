@@ -1,7 +1,7 @@
 name: Main
 on: [ push, pull_request ]
 jobs:
-  Checks_scripts:
+  Check_scripts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -9,6 +9,7 @@ jobs:
 
   Units:
     runs-on: ubuntu-latest
+    needs: [ Check_scripts ]
     strategy:
       fail-fast: false
       matrix:
@@ -26,13 +27,14 @@ jobs:
   # Modify this test, and the list of examples in test 'Functional_Tests'
   Functional_Tests_Regression:
     runs-on: ubuntu-latest
+    needs: [ Check_scripts ]
     steps:
       - uses: actions/checkout@v2
       - run: test "$(ls -1 examples | wc -l)" -eq 6
 
   Functional_Tests:
     runs-on: ubuntu-latest
-    needs: [ functional_tests_regression ]
+    needs: [ Check_scripts ]
     strategy:
       fail-fast: false
       matrix:
