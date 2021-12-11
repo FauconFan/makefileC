@@ -1,6 +1,12 @@
 name: Main
 on: [ push, pull_request ]
 jobs:
+  Checks_scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: shellcheck $(find . -name "*.bash" -o -name "*.sh")
+
   Units:
     runs-on: ubuntu-latest
     strategy:
