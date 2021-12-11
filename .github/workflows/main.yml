@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         folder: [
-          "1-minimal"
+          "10-minimal"
         ]
     name: "Unit: On ${{ matrix.folder }}"
     steps:
@@ -78,7 +78,7 @@ jobs:
       fail-fast: false
       matrix:
         folder: [
-          "1-minimal",
+          "10-minimal",
         ]
     name: "FT: On units/${{ matrix.folder }}"
     steps:
