@@ -17,3 +17,4 @@ export NAME_DEBUG
 . "${SCRIPT_DIR}"/_all_vs_debug.bash
 . "${SCRIPT_DIR}"/_fclean.bash
 . "${SCRIPT_DIR}"/_verbose.bash
+. "${SCRIPT_DIR}"/_recompile.bash
