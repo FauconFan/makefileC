@@ -4,6 +4,7 @@ jobs:
 
   functional_tests:
     strategy:
+      fail-fast: false
       matrix:
         folder: [
           "examples/1-hello-world",
