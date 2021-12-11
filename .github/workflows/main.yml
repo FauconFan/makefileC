@@ -25,14 +25,14 @@ jobs:
 
   # If the following test fails, it means the number of examples have changed
   # Modify this test, and the list of examples in test 'Functional_Tests'
-  Functional_Tests_Regression:
+  Functional_Tests_On_Examples_Regression:
     runs-on: ubuntu-latest
     needs: [ Check_scripts ]
     steps:
       - uses: actions/checkout@v2
       - run: test "$(ls -1 examples | wc -l)" -eq 6
 
-  Functional_Tests:
+  Functional_Tests_On_Examples:
     runs-on: ubuntu-latest
     needs: [ Check_scripts ]
     strategy:
@@ -46,9 +46,25 @@ jobs:
           "5-subdirs",
           "6-debug"
         ]
-    name: "FT: On ${{ matrix.folder }}"
+    name: "FT: On examples/${{ matrix.folder }}"
     steps:
       - uses: actions/checkout@v2
       - run: ../../tests/scripts/functional_tests.bash
         shell: bash
         working-directory: examples/${{ matrix.folder }}
+
+  Functional_Tests_On_Units:
+    runs-on: ubuntu-latest
+    needs: [ Check_scripts ]
+    strategy:
+      fail-fast: false
+      matrix:
+        folder: [
+          "1-minimal",
+        ]
+    name: "FT: On units/${{ matrix.folder }}"
+    steps:
+      - uses: actions/checkout@v2
+      - run: ../../../tests/scripts/functional_tests.bash
+        shell: bash
+        working-directory: tests/units/${{ matrix.folder }}
