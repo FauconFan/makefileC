@@ -3,10 +3,12 @@ on: [ push, pull_request ]
 jobs:
   Units:
     runs-on: ubuntu-latest
-    matrix:
-      folder: [
-        "1-minimal"
-      ]
+    strategy:
+      fail-fast: false
+      matrix:
+        folder: [
+          "1-minimal"
+        ]
     name: On tests/units/${{ matrix.folder }}
     steps:
       - uses: actions/checkout@v2
