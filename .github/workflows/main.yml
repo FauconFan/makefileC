@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: shellcheck $(find . -name "*.bash" -o -name "*.sh")
+      - run: shellcheck -x $(find . -name "*.bash" -o -name "*.sh")
 
   # If the following test fails, it means the number of examples have changed
   # Modify this test, and the list of examples in test 'Functional_Tests'
@@ -30,7 +30,7 @@ jobs:
           "5-subdirs",
           "6-debug"
         ]
-    name: "FT: On examples/${{ matrix.folder }}"
+    name: "Comp: On examples/${{ matrix.folder }}"
     steps:
       - uses: actions/checkout@v2
       - run: ../../tests/compilation/all.bash
