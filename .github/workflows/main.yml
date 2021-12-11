@@ -9,7 +9,7 @@ jobs:
         folder: [
           "1-minimal"
         ]
-    name: On tests/units/${{ matrix.folder }}
+    name: "Unit: On ${{ matrix.folder }}"
     steps:
       - uses: actions/checkout@v2
       - run: ./test.bash
@@ -38,7 +38,7 @@ jobs:
           "5-subdirs",
           "6-debug"
         ]
-    name: On examples/${{ matrix.folder }}
+    name: "FT: On ${{ matrix.folder }}"
     steps:
       - uses: actions/checkout@v2
       - run: ../../tests/scripts/functional_tests.bash
