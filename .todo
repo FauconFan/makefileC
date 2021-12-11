@@ -21,6 +21,8 @@ Core Features:
 
 	Tests:
 		☐ Test each utility through a pipeline
+		☐ Test multithread (How ?)
+		☐ Test progress status (How ?)
 
 	Examples:
 		☐ Implement a small utility to copy files and directories with GUI

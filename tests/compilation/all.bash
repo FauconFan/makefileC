@@ -18,3 +18,5 @@ export NAME_DEBUG
 . "${SCRIPT_DIR}"/_fclean.bash
 . "${SCRIPT_DIR}"/_verbose.bash
 . "${SCRIPT_DIR}"/_recompile.bash
+. "${SCRIPT_DIR}"/_multithread.bash
+. "${SCRIPT_DIR}"/_progress_status.bash
