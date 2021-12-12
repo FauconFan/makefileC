@@ -20,7 +20,9 @@ Core Features:
 	☐ `make help`
 
 	Tests:
-		☐ Test each utility through a pipeline
+		✔ Test each utility through a pipeline @done(21-12-12 13:52)
+		☐ Test multithread (How ?)
+		☐ Test progress status (How ?)
 
 	Examples:
 		☐ Implement a small utility to copy files and directories with GUI
@@ -51,6 +53,10 @@ Extensions:
 		☐ Black box tests (inputs / outputs / behavior)
 		☐ Test coverage report (from tests)
 		☐ Check memory leaks (from tests)
+
+Bugs:
+	☐ When names changed in config files, binaries are not relinked
+	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
 
 Unprioritized:
 	☐ Support Windows and MacOS

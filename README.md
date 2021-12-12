@@ -56,6 +56,7 @@ curl -fsSL https://raw.githubusercontent.com/FauconFan/makefileC/master/template
   - List all source files
 - Error handling
   - The `config.mk` file is missing
+  - Missing variables
   - Unauthorized variables are defined
   - Specified files are missing
   - Presence of unspecified files
