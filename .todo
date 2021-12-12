@@ -3,6 +3,11 @@ Questions:
 	☐ Check GNU Convention https://www.gnu.org/software/make/manual/html_node/Makefile-Conventions.html#Makefile-Conventions
 	☐ State of art for static analazers and linters
 	☐ State of art for unit testing and black box testing
+	☐ Why recursively includes subfolders of INC_FOLDER (explain why in README)
+
+Bugs:
+	☐ When names changed in config files, binaries are not relinked
+	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
 
 Core Features:
 	✔ basic rules all, clean, fclean, re @done(21-11-27 12:26)
@@ -13,50 +18,47 @@ Core Features:
 	✔ Multithread @done(21-11-27 12:26)
 	✔ Out-of-source @done(21-11-27 12:26)
 	✔ Document Configuration @done(21-12-08 21:11)
-	☐ Check prerequisites of the makefile
-	☐ Default hello-world
-	☐ Support cpp
-	☐ Add option to recursively includes subfolders of INC_FOLDER
 	☐ `make help`
+	☐ release
+	☐ Self update (autocheck if new version)
+
+	Core Extended:
+		☐ Support cpp
+		☐ Declare what lang (C, CPP, MIXED)
+		☐ Declare what goal is (binary, library static/dynamic)
+		☐ Self init (able to setup hello-world with just makefile)
+		☐ Subprojects (call and indentation)
+		☐ Install/Uninstall rule
 
 	Tests:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
+		☐ Design a benchmark suite
 
 	Examples:
 		☐ Implement a small utility to copy files and directories with GUI
 		☐ Implement a small utility to generate fractals with GUI
+		☐ Implement C/Cpp mixed projects
 
 	Error Handling:
 		✔ Config file is missing @done(21-11-27 12:28)
 		✔ Unauthorized variables are defined @done(21-11-27 12:28)
 		✔ Specified files are missing @done(21-11-27 12:28)
 		✔ Presence of unspecified files @done(21-11-27 12:28)
-		☐ Verify that minimal folders exists
+		☐ Check prerequisites of the makefile (shell calls)
+		✘ Verify that minimal folders exists (no need) @cancelled(21-12-12 17:57)
 		☐ Check if variables are being redefined in config file (check if valuable)
 		☐ Check if NAME or NAME_DEBUG is a keywork in the Makefile definition
 		☐ Check if NAME and NAME_DEBUG are the same
 		☐ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER
 
-Extensions:
-	Hierarchical projects and deployments:
-		☐ Self init
-		☐ Self update (autocheck if new version)
-		☐ Subprojects (call and indentation)
-		☐ Support for libraries (static or dynamic)
-		☐ Install/Uninstall rule
-
-	Test and CI:
+	Lint, unit tests and black boxes:
 		☐ Create a dockerfile that is easily changeable, upon configuration
 		☐ Unit tests (white box tests)
 		☐ Black box tests (inputs / outputs / behavior)
 		☐ Test coverage report (from tests)
 		☐ Check memory leaks (from tests)
-
-Bugs:
-	☐ When names changed in config files, binaries are not relinked
-	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
 
 Unprioritized:
 	☐ Support Windows and MacOS
