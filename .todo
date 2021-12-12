@@ -20,7 +20,7 @@ Core Features:
 	☐ `make help`
 
 	Tests:
-		☐ Test each utility through a pipeline
+		✔ Test each utility through a pipeline @done(21-12-12 13:52)
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
 
@@ -55,7 +55,7 @@ Extensions:
 		☐ Check memory leaks (from tests)
 
 Bugs:
-	☐ When configuration changed, binaries are not relinked
+	☐ When names changed in config files, binaries are not relinked
 	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
 
 Unprioritized:
