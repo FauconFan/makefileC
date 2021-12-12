@@ -21,12 +21,12 @@ Core Features:
 	☐ `make help`
 	☐ release
 	☐ Self update (autocheck if new version)
+	☐ Self init (able to setup hello-world with just makefile)
 
 	Core Extended:
 		☐ Support cpp
 		☐ Declare what lang (C, CPP, MIXED)
 		☐ Declare what goal is (binary, library static/dynamic)
-		☐ Self init (able to setup hello-world with just makefile)
 		☐ Subprojects (call and indentation)
 		☐ Install/Uninstall rule
 
