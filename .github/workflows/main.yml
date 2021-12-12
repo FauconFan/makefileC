@@ -55,4 +55,4 @@ jobs:
       - uses: actions/checkout@v2
       - run: ../all.bash
         shell: bash
-        working-directory: tests/error-handling/mini-project
+        working-directory: tests/error-handling/mini-project2
