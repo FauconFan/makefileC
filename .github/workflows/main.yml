@@ -46,3 +46,13 @@ jobs:
       - run: ../all.bash
         shell: bash
         working-directory: tests/configuration/mini-project
+
+  Error-Handling:
+    runs-on: ubuntu-latest
+    needs: [ Check_scripts ]
+    name: Error-handling on mini-project2
+    steps:
+      - uses: actions/checkout@v2
+      - run: ../all.bash
+        shell: bash
+        working-directory: tests/error-handling/mini-project
