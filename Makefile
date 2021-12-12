@@ -287,9 +287,9 @@ endif
 all: $(_NAME_TARGET)
 
 $(_NAME_TARGET): INIT $(_OBJ)
-	@ test $(_NB_TO_COMP) -ne 0 || $(call _print_nothing_to_relink)
-	@ test $(_NB_TO_COMP) -eq 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
-	@ test $(_NB_TO_COMP) -eq 0 || $(call _print_name)
+	@ test "$(_NB_TO_COMP)" -ne 0 || $(call _print_nothing_to_relink)
+	@ test "$(_NB_TO_COMP)" -eq 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
+	@ test "$(_NB_TO_COMP)" -eq 0 || $(call _print_name)
 
 ifdef COUNT_OBJS
 
@@ -310,7 +310,7 @@ endif
 
 .PHONY: INIT
 INIT:
-	@ $(eval _NB_TO_COMP := $(shell env COUNT_OBJS=YES $(MAKE) $(_OBJ) DEBUG=$(DEBUG) | grep +1 | wc -l))
+	@ $(eval _NB_TO_COMP := $(shell $(MAKE) COUNT_OBJS=YES DEBUG=$(DEBUG) $(_OBJ) | grep +1 | wc -l))
 	@ $(eval _NB_ACTU := 0)
 
 .PHONY: clean
