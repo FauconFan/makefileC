@@ -36,3 +36,13 @@ jobs:
       - run: ../../tests/compilation/all.bash
         shell: bash
         working-directory: examples/${{ matrix.folder }}
+
+  Configuration:
+    runs-on: ubuntu-latest
+    needs: [ Check_scripts ]
+    name: Configuration on mini-project
+    steps:
+      - uses: actions/checkout@v2
+      - run: ../all.bash
+        shell: bash
+        working-directory: tests/configuration/mini-project

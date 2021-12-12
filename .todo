@@ -54,5 +54,9 @@ Extensions:
 		☐ Test coverage report (from tests)
 		☐ Check memory leaks (from tests)
 
+Bugs:
+	☐ When configuration changed, binaries are not relinked
+	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
+
 Unprioritized:
 	☐ Support Windows and MacOS

@@ -19,9 +19,9 @@ diff <(eval "${NAME_DEBUG}") /tmp/debug_output
 make fclean
 
 make all
-test "$(objdump --syms "${NAME}" | grep -c debug)" -eq 0
+test "$(objdump --syms "${NAME}" | grep -v "file format" | grep -c debug)" -eq 0
 make debug
-test "$(objdump --syms "${NAME_DEBUG}" | grep -c debug)" -gt 0
+test "$(objdump --syms "${NAME_DEBUG}" | grep -v "file format" | grep -c debug)" -gt 0
 make fclean
 
 rm -f /tmp/release_output /tmp/debug_output
