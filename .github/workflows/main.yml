@@ -9,16 +9,15 @@ jobs:
 
   # If the following test fails, it means the number of examples have changed
   # Modify this test, and the list of examples in job 'Compilation'
-  Compilation_Prevent:
+  Compilation_Precheck:
     runs-on: ubuntu-latest
-    needs: [ Check_scripts ]
     steps:
       - uses: actions/checkout@v2
       - run: test "$(find examples -mindepth 1 -maxdepth 1 | wc -l)" -eq 6
 
   Compilation:
     runs-on: ubuntu-latest
-    needs: [ Check_scripts ]
+    needs: [ Check_scripts, Compilation_Precheck ]
     strategy:
       fail-fast: false
       matrix:
