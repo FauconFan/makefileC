@@ -24,7 +24,7 @@ jobs:
       matrix:
         folder: [
           "1-hello-world",
-          "2-sum100",
+          "2-sum10",
           "3-fibonacci",
           "4-fib-gcc",
           "5-subdirs",
