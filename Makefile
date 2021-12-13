@@ -50,21 +50,29 @@ define _print_progress # 1:name of file to compile as argument
 		"\`$(strip $(1))\`"
 endef
 
-define _print_clean
+define _print_clean_build_dir
 	printf " %s[ INFO ]%s %sRemove%s       object and dependency files\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_RED)" "$(_END)"
 endef
 
-define _print_fclean
+define _print_clean_bin # 1: name of the file that was removed
 	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_RED)" "$(_END)" \
-		"$(_YELLOW)" "$(_NAME)" "$(_END)"
-	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" \
+		"$(_YELLOW)" "$(strip $(1))" "$(_END)"
+endef
+
+define _print_end_clean
+	printf " %s[ INFO ]%s %sClean%s\\n" \
 		"$(_CYAN)" "$(_END)" \
-		"$(_RED)" "$(_END)" \
-		"$(_YELLOW)" "$(_NAME_DEBUG)" "$(_END)"
+		"$(_RED)" "$(_END)"
+endef
+
+define _print_end_fclean
+	printf " %s[ INFO ]%s %sFull clean%s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_RED)" "$(_END)"
 endef
 
 define _print_missing_config_mk
@@ -177,7 +185,7 @@ else #endif will end at end of load config.mk
 
 ######### Define variables
 
-DEBUG   ?= 0
+_DEBUG   ?= 0
 VERBOSE ?= 0
 
 _NAME                 := $(strip $(NAME))
@@ -186,8 +194,8 @@ _INC_FOLDER           := $(strip $(INC_FOLDER))
 _SRC_FOLDER           := $(strip $(SRC_FOLDER))
 _BUILD_FOLDER         := $(strip $(BUILD_FOLDER))
 
-_NAME_TARGET          := $(if $(filter 0, $(DEBUG)),$(_NAME),$(_NAME_DEBUG))
-_TARGET               := $(if $(filter 0, $(DEBUG)),release,debug)
+_NAME_TARGET          := $(if $(filter 0, $(_DEBUG)),$(_NAME),$(_NAME_DEBUG))
+_TARGET               := $(if $(filter 0, $(_DEBUG)),release,debug)
 
 _BUILD_TARGET_FOLDER  := $(subst /,,$(_BUILD_FOLDER))/$(_TARGET)/
 
@@ -204,7 +212,7 @@ _IFLAGS     := -I $(_INC_FOLDER)
 _LDFLAGS    := $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
 _LDLIBS     := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
-_CFLAGS     := $(CFLAGS_COMMON) $(if $(filter 0, $(DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
+_CFLAGS     := $(CFLAGS_COMMON) $(if $(filter 0, $(_DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
 
 ######### Generating variables for files
 
@@ -270,7 +278,7 @@ else # will end at end of Makefile
 ifeq ($(VERBOSE),0)
 
 define cmd #1: command to run
-	$(1)
+	($(1))
 endef
 
 else
@@ -287,11 +295,11 @@ endif
 all: $(_NAME_TARGET)
 
 $(_NAME_TARGET): INIT $(_OBJ)
-	@ test "$(_NB_TO_COMP)" -ne 0 || $(call _print_nothing_to_relink)
-	@ test "$(_NB_TO_COMP)" -eq 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
-	@ test "$(_NB_TO_COMP)" -eq 0 || $(call _print_name)
+	@ ! test "$(_NB_TO_COMP)" -eq 0 || $(call _print_nothing_to_relink)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_name)
 
-ifdef COUNT_OBJS
+ifdef _COUNT_OBJS
 
 $(_BUILD_TARGET_FOLDER)%.o: $(_SRC_FOLDER)%.c
 	@ echo "+1"
@@ -308,21 +316,38 @@ endif
 
 -include $(_DEP)
 
+# Computes the number of files that will be recompiled and store it in _NB_TO_COMP
+# The second eval manages to check somehow the final binary has been removed
+#   The structure of the makefile will not be able to relink because of the INIT target
+#   So we increment the _NB_TO_COMP by one in order to force it
 .PHONY: INIT
 INIT:
-	@ $(eval _NB_TO_COMP := $(shell $(MAKE) COUNT_OBJS=YES DEBUG=$(DEBUG) $(_OBJ) | grep +1 | wc -l))
+	@ $(eval _NB_TO_COMP := \
+		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) $(_OBJ) | grep +1 | wc -l))
+	@ $(eval _NB_TO_COMP := \
+		$(shell echo $$(( $(_NB_TO_COMP) + \
+			0$(shell test "$(_NB_TO_COMP)" -eq 0 -a ! -f "$(_NAME_TARGET)" && echo 1) \
+		)) ) \
+	  )
+
 	@ $(eval _NB_ACTU := 0)
 
+.PHONY: _clean_build_dir
+_clean_build_dir:
+	@ ! test -d "$(_BUILD_FOLDER)" || $(call _print_clean_build_dir)
+	@ ! test -d "$(_BUILD_FOLDER)" || $(call cmd, rm -rf $(_BUILD_FOLDER))
+
 .PHONY: clean
-clean:
-	@ $(call cmd, rm -rf $(_BUILD_FOLDER))
-	@ $(call _print_clean)
+clean: _clean_build_dir
+	@ $(call _print_end_clean)
 
 .PHONY: fclean
-fclean: clean
-	@ $(call cmd, rm -f $(_NAME))
-	@ $(call cmd, rm -f $(_NAME_DEBUG))
-	@ $(call _print_fclean)
+fclean: _clean_build_dir
+	@ ! test -f "$(_NAME)" || $(call _print_clean_bin,$(_NAME))
+	@ ! test -f "$(_NAME)" || $(call cmd, rm -f $(_NAME))
+	@ ! test -f "$(_NAME_DEBUG)" || $(call _print_clean_bin,$(_NAME_DEBUG))
+	@ ! test -f "$(_NAME_DEBUG)" || $(call cmd, rm -f $(_NAME_DEBUG))
+	@ $(call _print_end_fclean)
 
 .PHONY: re
 re: fclean all
@@ -331,14 +356,14 @@ re: fclean all
 
 .PHONY: debug
 debug:
-	@ $(MAKE) --no-print-directory DEBUG=1 all
+	@ $(MAKE) --no-print-directory _DEBUG=1 all
 
-ifeq ($(DEBUG),0)
+ifeq ($(_DEBUG),0)
 $(_NAME_DEBUG): debug
 endif
 
 .PHONY: redebug
 redebug:
-	@ $(MAKE) --no-print-directory DEBUG=1 re
+	@ $(MAKE) --no-print-directory _DEBUG=1 re
 
 endif #endif of error reporting

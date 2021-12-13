@@ -5,11 +5,11 @@ declare -A CONFIG=()
 # release check
 CONFIG[output]='output'
 saveConfig "$(declare -p CONFIG)"
-make re
+make
 
 CONFIG[output]='random-output'
 saveConfig "$(declare -p CONFIG)"
-make re
+make
 
 test -f output
 test -f random-output
@@ -27,11 +27,11 @@ test ! -f random-output
 # debug check
 CONFIG[output-debug]='output-debug'
 saveConfig "$(declare -p CONFIG)"
-make redebug
+make debug
 
 CONFIG[output-debug]='random-debug'
 saveConfig "$(declare -p CONFIG)"
-make redebug
+make debug
 
 test -f output-debug
 test -f random-debug

@@ -6,7 +6,7 @@ Questions:
 	☐ Why recursively includes subfolders of INC_FOLDER (explain why in README)
 
 Bugs:
-	☐ When names changed in config files, binaries are not relinked
+	✔ When names changed in config files, binaries are not relinked @done(21-12-13 19:06)
 	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
 
 Core Features:
