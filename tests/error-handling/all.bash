@@ -3,7 +3,7 @@
 set -eux
 
 if [ ! "$(git rev-parse --show-prefix)" = "tests/error-handling/mini-project2/" ]; then
-	echo "You have to run this test inside the mini-project folder"
+	echo "You have to run this test inside the mini-project2 folder"
 	exit 1
 fi
 
