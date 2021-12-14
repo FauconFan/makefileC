@@ -2,10 +2,6 @@
 SHELL := /bin/sh
 .SUFFIXES:
 
-_SELF_URL_GIT = https://github.com/fauconfan/makefileC
-_SELF_URL_MAKEFILE = https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile
-_SELF_URL_MAKEFILE_CONFIG_TEMPLATE = https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk
-
 ###############################################################################
 #########                                                            ##########
 #########                           PRELUDE                          ##########
