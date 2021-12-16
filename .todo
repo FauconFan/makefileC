@@ -29,14 +29,14 @@ Core Features:
 		☐ Declare what goal is (binary, library static/dynamic)
 		☐ Subprojects (call and indentation)
 		☐ Install/Uninstall rule
-		
+
 	Tests:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
-		☐ test in CI if TERM equals "" it still works
+		☐ test different values of TERM (How ?)
 		☐ make help compared with README.md
-		☐ Design a benchmark suite
+		☐ Design a benchmark suite compared to a minimal Makefile with no fancy stuff
 
 	Examples:
 		☐ Implement a small utility to copy files and directories with GUI

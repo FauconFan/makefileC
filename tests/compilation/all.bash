@@ -25,5 +25,6 @@ export INC_FOLDER
 . "${SCRIPT_DIR}"/_multithread.bash
 . "${SCRIPT_DIR}"/_progress_status.bash
 . "${SCRIPT_DIR}"/_out_of_sources.bash
+. "${SCRIPT_DIR}"/_tput_TERM.bash
 
 make fclean
