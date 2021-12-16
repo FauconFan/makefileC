@@ -19,6 +19,8 @@ Core Features:
 	✔ Out-of-source @done(21-11-27 12:26)
 	✔ Document Configuration @done(21-12-08 21:11)
 	☐ `make help`
+	☐ test in CI if TERM equals "" it still works
+	☐ make help compared with README.md
 	☐ release
 	☐ Self update (autocheck if new version)
 	☐ Self init (able to setup hello-world with just makefile)
@@ -49,7 +51,7 @@ Core Features:
 		☐ Check prerequisites of the makefile (shell calls)
 		✘ Verify that minimal folders exists (no need) @cancelled(21-12-12 17:57)
 		☐ Check if variables are being redefined in config file (check if valuable)
-		☐ Check if NAME or NAME_DEBUG is a keywork in the Makefile definition
+		☐ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition
 		☐ Check if NAME and NAME_DEBUG are the same
 		☐ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER
 
