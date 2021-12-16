@@ -5,7 +5,7 @@ set -eux
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
-ALL_RULES="all clean fclean re debug redebug"
+ALL_RULES="all clean fclean re debug redebug help"
 NAME="./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs)"
 NAME_DEBUG="./$(grep NAME_DEBUG < config.mk | cut -d'=' -f2 | xargs)"
 SRC_FOLDER="$(grep "SRC_FOLDER *=" config.mk | cut -d'=' -f2 | xargs)"
