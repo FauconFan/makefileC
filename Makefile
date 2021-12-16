@@ -136,11 +136,11 @@ _foreach2			= $(if $(strip $(3)), \
 							, \
 						)
 
-######### Self config tables
+######### Self config tables (or SCT)
 
 # Columns:
 #   rule	description
-_SELF_CONFIG_TABLE_TARGETS := \
+_SCT_TARGETS := \
 	all			$(call _merge_words,Builds the release binary) \
 	clean		$(call _merge_words,Removes generated files except binaries) \
 	fclean		$(call _merge_words,Removes all generated files) \
@@ -149,12 +149,12 @@ _SELF_CONFIG_TABLE_TARGETS := \
 	redebug		$(call _merge_words,Alias for \"make fclean && make debug\") \
 	help		$(call _merge_words,Prints this message) \
 
-_SELF_CONFIG_TABLE_TARGETS_NAMES := $(call _select_mod,$(_SELF_CONFIG_TABLE_TARGETS), 0, 2)
-_SELF_CONFIG_TABLE_TARGETS_HELP := $(call _select_mod,$(_SELF_CONFIG_TABLE_TARGETS), 1, 2)
+_SCT_TARGETS_NAMES := $(call _select_mod,$(_SCT_TARGETS), 0, 2)
+_SCT_TARGETS_HELP := $(call _select_mod,$(_SCT_TARGETS), 1, 2)
 
 # Columns:
 #   name variable		isMandatory
-_SELF_CONFIG_TABLES_VARIABLES := \
+_SCT_VARIABLES := \
 	NAME				TRUE \
 	NAME_DEBUG			TRUE \
 	INC_FOLDER			TRUE \
@@ -168,8 +168,8 @@ _SELF_CONFIG_TABLES_VARIABLES := \
 	LDLIBS				FALSE \
 	SRC					TRUE \
 
-_SELF_CONFIG_TABLES_VARIABLES_ALL := $(call _select_mod,$(_SELF_CONFIG_TABLES_VARIABLES), 0, 2)
-_SELF_CONFIG_TABLES_VARIABLES_MANDATORY := $(call _select_on_mod,$(_SELF_CONFIG_TABLES_VARIABLES), 0, 2, 1, TRUE)
+_SCT_VARIABLES_ALL := $(call _select_mod,$(_SCT_VARIABLES), 0, 2)
+_SCT_VARIABLES_MANDATORY := $(call _select_on_mod,$(_SCT_VARIABLES), 0, 2, 1, TRUE)
 
 ######### Define print functions
 
@@ -177,7 +177,7 @@ define _print_help
 	printf "Usage: make %s[target]%s\\n" "$(_CYAN)" "$(_END)"
 	printf "\\n"
 	printf "Here is the list of targets:\\n"
-	$(call _foreach2, target, description,$(_SELF_CONFIG_TABLE_TARGETS), \
+	$(call _foreach2, target, description,$(_SCT_TARGETS), \
 		printf "  make %s%-20s%s %s\\n" \
 			"$(_CYAN)" "@target" "$(_END)" \
 			"@description";)
@@ -303,7 +303,7 @@ _USER_DEFINED_VARIABLES := $(filter-out $(_MAKEFILE_DEFINED_VARIABLES), $(call _
 
 ######### Verify unauthorized variables in config.mk
 
-_ERRORS_UNAUTHORIZED_VARIABLES := $(filter-out $(_SELF_CONFIG_TABLES_VARIABLES_ALL), $(_USER_DEFINED_VARIABLES))
+_ERRORS_UNAUTHORIZED_VARIABLES := $(filter-out $(_SCT_VARIABLES_ALL), $(_USER_DEFINED_VARIABLES))
 
 ifneq ($(_ERRORS_UNAUTHORIZED_VARIABLES),)
 _HAS_ERROR = 1
@@ -312,7 +312,7 @@ endif
 
 ######### Verify missing variables in config.mk
 
-_ERRORS_MISSING_VARIABLES := $(foreach MANDATORY_VARIABLE,$(_SELF_CONFIG_TABLES_VARIABLES_MANDATORY), \
+_ERRORS_MISSING_VARIABLES := $(foreach MANDATORY_VARIABLE,$(_SCT_VARIABLES_MANDATORY), \
 								$(if $($(MANDATORY_VARIABLE)),,$(MANDATORY_VARIABLE)))
 
 ifneq ($(strip $(_ERRORS_MISSING_VARIABLES)),)
@@ -508,5 +508,11 @@ redebug:
 .PHONY: help
 help:
 	@ $(call _print_help)
+
+######### Manage printing variables for CI purposes (not documented in the API)
+
+.PHONY: _printvar_%
+_printvar_%:
+	@ echo $($*)
 
 endif #endif of error reporting
