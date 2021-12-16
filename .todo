@@ -18,9 +18,7 @@ Core Features:
 	✔ Multithread @done(21-11-27 12:26)
 	✔ Out-of-source @done(21-11-27 12:26)
 	✔ Document Configuration @done(21-12-08 21:11)
-	☐ `make help`
-	☐ test in CI if TERM equals "" it still works
-	☐ make help compared with README.md
+	✔ `make help` @done(21-12-16 17:08)
 	☐ release
 	☐ Self update (autocheck if new version)
 	☐ Self init (able to setup hello-world with just makefile)
@@ -31,11 +29,13 @@ Core Features:
 		☐ Declare what goal is (binary, library static/dynamic)
 		☐ Subprojects (call and indentation)
 		☐ Install/Uninstall rule
-
+		
 	Tests:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
+		☐ test in CI if TERM equals "" it still works
+		☐ make help compared with README.md
 		☐ Design a benchmark suite
 
 	Examples:
