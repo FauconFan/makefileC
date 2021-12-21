@@ -5,10 +5,6 @@ Questions:
 	☐ State of art for unit testing and black box testing
 	☐ Why recursively includes subfolders of INC_FOLDER (explain why in README)
 
-Bugs:
-	✔ When names changed in config files, binaries are not relinked @done(21-12-13 19:06)
-	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
-
 Core Features:
 	✔ basic rules all, clean, fclean, re @done(21-11-27 12:26)
 	✔ make (re)debug @done(21-11-27 12:26)
@@ -61,6 +57,9 @@ Core Features:
 		☐ Black box tests (inputs / outputs / behavior)
 		☐ Test coverage report (from tests)
 		☐ Check memory leaks (from tests)
+	
+	Bugs:
+		☐ When directory names changed, deps file are not updated, it leads to wrong unspecified behavior, needs to get an appropriate behavior
 
 Unprioritized:
 	☐ Support Windows and MacOS
