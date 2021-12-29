@@ -248,6 +248,18 @@ define _print_can_update
 		"$(_PURPLE)" "$(_END)"
 endef
 
+define _print_self_update
+	printf " %s[ INFO ]%s %sUpdate%s       $(_SELF_REALPATH) has been updated\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_PURPLE)" "$(_END)"
+endef
+
+define _print_self_update_ignore
+	printf " %s[ INFO ]%s %sIgnore%s       reminder has been muted\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_PURPLE)" "$(_END)"
+endef
+
 define _print_clean_build_dir
 	printf " %s[ INFO ]%s %sRemove%s       object and dependency files\\n" \
 		"$(_CYAN)" "$(_END)" \
@@ -631,10 +643,12 @@ endif
 
 .PHONY: self_update_ignore
 self_update_ignore:
+	@ $(call _print_self_update_ignore)
 	@ $(_SELF_CMD_IGNORE_UPDATE)
 
 .PHONY: self_update
 self_update:
+	@ $(call _print_self_update)
 	@ $(_SELF_CMD_UPDATE)
 
 ######### Manage printing variables for CI purposes (not documented in the API)
