@@ -28,6 +28,8 @@ Core Features:
 
 	Tests:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
+		☐ Test default rule (no target)
+		☐ Test for error-handling if the output is the same, whatever the target
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
 		☐ test different values of TERM (How ?)
@@ -47,6 +49,7 @@ Core Features:
 		☐ Check prerequisites of the makefile (shell calls)
 		✘ Verify that minimal folders exists (no need) @cancelled(21-12-12 17:57)
 		☐ Check if variables are being redefined in config file (check if valuable)
+		☐ Appropriate message if target not exists
 		☐ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition
 		☐ Check if NAME and NAME_DEBUG are the same
 		☐ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER

@@ -2,6 +2,9 @@
 SHELL := /bin/sh
 .SUFFIXES:
 
+_SELF_PROJECT_NAME   := makefileC
+_SELF_URL_RELEASE    := https://raw.githubusercontent.com/FauconFan/$(_SELF_PROJECT_NAME)/master/Makefile
+
 ###############################################################################
 #########                                                            ##########
 #########                     PRELUDE - variables                    ##########
@@ -20,6 +23,7 @@ _WHITE		:= $(shell tput setaf 7 2> /dev/null || echo -n "")
 _END		:= $(shell tput sgr0 2> /dev/null || echo -n "")
 
 ######### "Constants"
+
 _empty				:=
 _space				:= $(_empty) $(_empty)
 _impossible_pattern	:= ¤µ§£¢42Ł£§µ£
@@ -151,16 +155,21 @@ _foreach2			= $(if $(strip $(3)), \
 # Columns:
 #   rule	description
 _SCT_TARGETS := \
-	all			$(call _merge_words,Builds the release binary) \
-	clean		$(call _merge_words,Removes generated files except binaries) \
-	fclean		$(call _merge_words,Removes all generated files) \
-	re			$(call _merge_words,Alias for \"make fclean && make all\") \
-	debug		$(call _merge_words,Same as \"make all\" except it uses debug flags) \
-	redebug		$(call _merge_words,Alias for \"make fclean && make debug\") \
-	help		$(call _merge_words,Prints this message) \
+	all					$(call _merge_words,Builds the release binary) \
+	clean				$(call _merge_words,Removes generated files except binaries) \
+	fclean				$(call _merge_words,Removes all generated files) \
+	re					$(call _merge_words,Alias for \"make fclean && make all\") \
+	debug				$(call _merge_words,Same as \"make all\" except it uses debug flags) \
+	redebug				$(call _merge_words,Alias for \"make fclean && make debug\") \
+	self_update			$(call _merge_words,Self update from remote if new version is available) \
+	self_update_ignore	$(call _merge_words,Ignore self reminder for a short time) \
+	help				$(call _merge_words,Prints this message) \
 
-_SCT_TARGETS_NAMES := $(call _select_mod,$(_SCT_TARGETS), 0, 2)
-_SCT_TARGETS_HELP := $(call _select_mod,$(_SCT_TARGETS), 1, 2)
+_SCT_TARGETS_NAMES      := $(call _select_mod,$(_SCT_TARGETS), 0, 2)
+_SCT_TARGETS_HELP       := $(call _select_mod,$(_SCT_TARGETS), 1, 2)
+
+_SCT_SELF_UPDATE_DESCRIPTION        := $(call _unmerge_words,$(strip $(call _select_on_mod,$(_SCT_TARGETS), 1, 2, 0, self_update)))
+_SCT_SELF_UPDATE_IGNORE_DESCRIPTION := $(call _unmerge_words,$(strip $(call _select_on_mod,$(_SCT_TARGETS), 1, 2, 0, self_update_ignore)))
 
 # Columns:
 #   name variable		isMandatory
@@ -178,7 +187,7 @@ _SCT_VARIABLES := \
 	LDLIBS				FALSE \
 	SRC					TRUE \
 
-_SCT_VARIABLES_ALL := $(call _select_mod,$(_SCT_VARIABLES), 0, 2)
+_SCT_VARIABLES_ALL       := $(call _select_mod,$(_SCT_VARIABLES), 0, 2)
 _SCT_VARIABLES_MANDATORY := $(call _select_on_mod,$(_SCT_VARIABLES), 0, 2, 1, TRUE)
 
 ###############################################################################
@@ -203,7 +212,7 @@ define _print_name
 	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
-		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
+		"$(_)" "$(_NAME_TARGET)" "$(_END)" ""
 endef
 
 define _print_nothing_to_relink
@@ -222,6 +231,21 @@ define _print_progress # 1:name of file to compile as argument
 		"$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
 		"\`$(strip $(1))\`"
+endef
+
+define _print_can_update
+	printf " %s[ UPDATE ]%s %sA new version of $(_SELF_PROJECT_NAME) is available%s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_PURPLE)" "$(_END)"
+	printf " %s[ UPDATE ]%s   %sYou can either:%s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_PURPLE)" "$(_END)"
+	printf " %s[ UPDATE ]%s     %s- \`make self_update\`: $(_SCT_SELF_UPDATE_DESCRIPTION)%s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_PURPLE)" "$(_END)"
+	printf " %s[ UPDATE ]%s     %s- \`make self_update_ignore\`: $(_SCT_SELF_UPDATE_IGNORE_DESCRIPTION)%s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_PURPLE)" "$(_END)"
 endef
 
 define _print_clean_build_dir
@@ -289,6 +313,73 @@ define _print_end_error_reporting
 	printf " %s[ INFO ]%s aborting\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
+
+###############################################################################
+#########                                                            ##########
+#########                         SELF UPDATE                        ##########
+#########                                                            ##########
+###############################################################################
+
+_SELF_LOCAL_DIR         := ~/.$(_SELF_PROJECT_NAME)
+_SELF_LATEST_MAKEFILE   := $(_SELF_LOCAL_DIR)/latest.mk
+_SELF_IGNORE_FILE       := $(_SELF_LOCAL_DIR)/ignore
+_SELF_REFRESH_CHECK     := 1 day
+
+_SELF_NEED_DOWNLOAD     := 0
+_SELF_CAN_UPDATE        := 0
+
+_IGNORE_SELF_UPDATE     ?= 0
+
+_SELF_REALPATH          := $(shell realpath $(lastword $(MAKEFILE_LIST)))
+
+_SELF_CMD_IGNORE_UPDATE := touch $(_SELF_IGNORE_FILE)
+_SELF_CMD_UPDATE        := cp $(_SELF_LATEST_MAKEFILE) $(_SELF_REALPATH)
+
+######### Create local dir if not exists
+
+ifeq ($(wildcard $(_SELF_LOCAL_DIR)),)
+$(shell mkdir $(_SELF_LOCAL_DIR))
+endif
+
+ifeq ($(wildcard $(_SELF_IGNORE_FILE)),)
+$(shell touch -t $(shell date -d "$(_SELF_REFRESH_CHECK) ago" "+%Y%m%d%H%M.%S") $(_SELF_IGNORE_FILE))
+endif
+
+######### Check if download the makefile from GitHub is necessary
+
+ifeq ($(wildcard $(_SELF_LATEST_MAKEFILE)),)
+_SELF_NEED_DOWNLOAD = 1
+else
+
+ifeq ($(shell test "$(shell stat --format=%Y $(_SELF_LATEST_MAKEFILE))" -gt \
+	"$(shell date -d "$(_SELF_REFRESH_CHECK) ago" +%s)" || echo 1),1)
+_SELF_NEED_DOWNLOAD = 1
+endif
+
+endif
+
+######### Downloading
+
+ifeq ($(_SELF_NEED_DOWNLOAD),1)
+$(shell curl -s -o $(_SELF_LATEST_MAKEFILE) $(_SELF_URL_RELEASE))
+endif
+
+######### Checking if you can update
+
+ifneq ($(shell diff $(_SELF_REALPATH) $(_SELF_LATEST_MAKEFILE)),)
+_SELF_CAN_UPDATE = 1
+endif
+
+######### Ignore self update if specified
+
+ifeq ($(shell test "$(shell stat --format=%Y $(_SELF_IGNORE_FILE))" -lt \
+	"$(shell date -d "$(_SELF_REFRESH_CHECK) ago" +%s)" || echo 1),1)
+_SELF_CAN_UPDATE = 0
+endif
+
+ifeq ($(_IGNORE_SELF_UPDATE),1)
+_SELF_CAN_UPDATE = 0
+endif
 
 ###############################################################################
 #########                                                            ##########
@@ -396,11 +487,8 @@ endif #endif of include _CONFIG_FILE
 
 ifeq ($(_HAS_ERROR),1)
 
-.DEFAULT_GOAL: report_error
-.DEFAULT: report_error
-
-.PHONY: report_error
-report_error:
+.PHONY: default
+default:
 ifeq ($(_HAS_ERROR_MISSING_CONFIG_FILE),1)
 	@ $(call _print_missing_config_mk)
 endif
@@ -416,15 +504,11 @@ endif
 	@ $(call _print_end_error_reporting)
 	@ false
 
-$(MAKECMDGOALS): report_error
+ifneq ($(MAKECMDGOALS),)
+$(MAKECMDGOALS): default
+endif
 
 else # will end at end of Makefile
-
-###############################################################################
-#########                                                            ##########
-#########                         SELF UPDATE                        ##########
-#########                                                            ##########
-###############################################################################
 
 ###############################################################################
 #########                                                            ##########
@@ -450,8 +534,11 @@ endif
 
 ######### Core rules
 
+.PHONY: default
+default: all
+
 .PHONY: all
-all: $(_NAME_TARGET)
+all: _show_self_update $(_NAME_TARGET)
 
 $(_NAME_TARGET): _INIT $(_OBJ)
 	@ ! test "$(_NB_TO_COMP)" -eq 0 || $(call _print_nothing_to_relink)
@@ -482,7 +569,7 @@ endif
 .PHONY: _INIT
 _INIT:
 	@ $(eval _NB_TO_COMP := \
-		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) $(_OBJ) | grep +1 | wc -l))
+		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) _IGNORE_SELF_UPDATE=1 $(_OBJ) | grep +1 | wc -l))
 	@ $(eval _NB_TO_COMP := \
 		$(shell echo $$(( $(_NB_TO_COMP) + \
 			0$(shell test "$(_NB_TO_COMP)" -eq 0 -a ! -f "$(_NAME_TARGET)" && echo 1) \
@@ -496,16 +583,19 @@ _clean_build_dir:
 	@ ! test -d "$(_BUILD_FOLDER)" || $(call _print_clean_build_dir)
 	@ ! test -d "$(_BUILD_FOLDER)" || $(call cmd, rm -rf $(_BUILD_FOLDER))
 
-.PHONY: clean
-clean: _clean_build_dir
-	@ $(call _print_end_clean)
-
-.PHONY: fclean
-fclean: _clean_build_dir
+.PHONY: _fclean_binaries
+_fclean_binaries:
 	@ ! test -f "$(_NAME)" || $(call _print_clean_bin,$(_NAME))
 	@ ! test -f "$(_NAME)" || $(call cmd, rm -f $(_NAME))
 	@ ! test -f "$(_NAME_DEBUG)" || $(call _print_clean_bin,$(_NAME_DEBUG))
 	@ ! test -f "$(_NAME_DEBUG)" || $(call cmd, rm -f $(_NAME_DEBUG))
+
+.PHONY: clean
+clean: _show_self_update _clean_build_dir
+	@ $(call _print_end_clean)
+
+.PHONY: fclean
+fclean: _show_self_update _clean_build_dir _fclean_binaries
 	@ $(call _print_end_fclean)
 
 .PHONY: re
@@ -514,22 +604,38 @@ re: fclean all
 ######### Manage debug
 
 .PHONY: debug
-debug:
-	@ $(MAKE) --no-print-directory _DEBUG=1 all
+debug: _show_self_update
+	@ $(MAKE) --no-print-directory _DEBUG=1 _IGNORE_SELF_UPDATE=1 all
 
 ifeq ($(_DEBUG),0)
 $(_NAME_DEBUG): debug
 endif
 
 .PHONY: redebug
-redebug:
-	@ $(MAKE) --no-print-directory _DEBUG=1 re
+redebug: _show_self_update
+	@ $(MAKE) --no-print-directory _DEBUG=1 _IGNORE_SELF_UPDATE=1 re
 
 ######### Manage help
 
 .PHONY: help
-help:
+help: _show_self_update
 	@ $(call _print_help)
+
+######### Manage self update
+
+.PHONY: _show_self_update
+_show_self_update:
+ifeq ($(_SELF_CAN_UPDATE),1)
+	@ $(call _print_can_update)
+endif
+
+.PHONY: self_update_ignore
+self_update_ignore:
+	@ $(_SELF_CMD_IGNORE_UPDATE)
+
+.PHONY: self_update
+self_update:
+	@ $(_SELF_CMD_UPDATE)
 
 ######### Manage printing variables for CI purposes (not documented in the API)
 
