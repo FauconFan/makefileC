@@ -1,6 +1,11 @@
 
-SHELL := /bin/sh
+SHELL := bash
 .SUFFIXES:
+.ONESHELL:
+.SHELLFLAGS := -eu -o pipefail -c
+.DELETE_ON_ERROR:
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 
 _SELF_PROJECT_NAME   := makefileC
 _SELF_URL_RELEASE    := https://raw.githubusercontent.com/FauconFan/$(_SELF_PROJECT_NAME)/master/Makefile

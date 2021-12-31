@@ -63,10 +63,11 @@ Core Features:
 		☐ Black box tests (inputs / outputs / behavior)
 		☐ Test coverage report (from tests)
 		☐ Check memory leaks (from tests)
-	
+
 	Bugs:
 		☐ When directory names changed, deps file are not updated, it leads to wrong unspecified behavior, needs to get an appropriate behavior
 
 Unprioritized:
 	☐ Support Windows and MacOS
 	☐ Look checkmake in case it becomes really interesting
+	☐ Good practices: https://tech.davis-hansson.com/p/make/
