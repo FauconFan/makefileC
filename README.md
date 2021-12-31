@@ -2,7 +2,7 @@
 
 # The (ultimate project manager) Makefile [![Main](https://github.com/FauconFan/makefileC/actions/workflows/main.yml/badge.svg)](https://github.com/FauconFan/makefileC/actions/workflows/main.yml)
 
-This is the summary of my experience applied to programming in C and C++. My ambition is to put together all good practices and necessary features of a well-driven C or C++ project. I would like to include good compilation, sub-projects, static analyzers, and testing processes.
+This is the summary of my experience applied to programming in C. My ambition is to put together all good practices and necessary features of a well-driven C project. I would like to include good compilation, sub-projects, static analyzers, and testing processes.
 
 I want this makefile to be easy to use, easy to get started with and well-documented.
 
@@ -14,25 +14,11 @@ The ultimate makefile must be ***intuitive***, ***simple***, ***configurable***,
 
 ## Getting Started
 
-Basically you can copy/paste the whole content of the makefile into your project. You can then create a file called `config.mk`, run `make` and follow the instructions, you can also use the default template available in this repository as `template.config.mk`.
+Basically you can copy/paste the whole content of the makefile into your project. You can then use `make init` in order to have a minimal viable project. This will create the minimal file you need in order to start your project.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile -o Makefile
-```
-
-Then create the `config.mk` file and follow the instructions from `make`
-
-```bash
-touch config.mk
-make
-```
-
-OR
-
-You can use the default template:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk -o config.mk
+make init
 ```
 
 ## Features
@@ -43,6 +29,8 @@ curl -fsSL https://raw.githubusercontent.com/FauconFan/makefileC/master/template
   - `make fclean`: remove all binaries and generated files
   - `make re`: shortcut for `make fclean && make all`
 - Debug mode `make debug` and `make redebug`
+- Help command `make help`
+- Init command `make init` (when starting a new project only)
 - Verbose mode with VERBOSE=1 `make VERBOSE=1 [target]` (prints out meaningful commands)
 - Compile or recompile only if necessary (source files as well as header files)
 - If no file needs to be recompiled, nothing is done (no relink)
@@ -96,14 +84,19 @@ In the `config.mk` file, some variables can be defined. We have two types of var
 
 ## Availables commands of `make`
 
-Once all the Necessary Variables are available, a few commands are available:
+Once all the necessary variables are available, a few commands are available:
 
-- `make` or `make all`: Compiles the source files and generate the final binary
-- `make clean`: Remove all generated files except final binaries
-- `make fclean`: Remove all generated files
-- `make re`: Alias for `make fclean && make all`
-- `make debug`: Same as `make all` except it uses debug flags
-- `make redebug`: Alias for `make fclean && make debug`
+Here is the list of targets:
+- `make all`                       Builds the release binary
+- `make clean`                     Removes generated files except binaries
+- `make fclean`                    Removes all generated files
+- `make re`                        Alias for "make fclean && make all"
+- `make debug`                     Same as "make all" except it uses debug flags
+- `make redebug`                   Alias for "make fclean && make debug"
+- `make self_update`               Self update from remote if new version is available
+- `make self_update_ignore`        Ignore self reminder for a short time
+- `make init`                      Initialize the project (at start only)
+- `make help`                      Prints this message
 
 There is also one additional variable that can be provided through command line: VERBOSE. This variable looks like a boolean variable, its value is either 0 or 1. Its default value is 0.
 

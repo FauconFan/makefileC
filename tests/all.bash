@@ -29,3 +29,9 @@ popd
 pushd tests/error-handling/mini-project2
 ../all.bash
 popd
+
+pushd tests/self-update/mini-project3
+../all.bash
+popd
+
+./tests/init/all.bash

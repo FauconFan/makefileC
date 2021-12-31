@@ -3,6 +3,12 @@
 ## Check verbosity
 for rule in ${ALL_RULES}
 do
+	## Don't test verbosity on help,
+	## This target doesn't use any outside command
+	if [[ "${rule}" = "help" ]]; then
+		continue
+	fi
+
 	## Differentiate clean and fclean because they don't output any command CMD
 	## if there is nothing to remove
 	if [[ "${rule}" = "clean" ]] || [[ "${rule}" = "fclean" ]]; then

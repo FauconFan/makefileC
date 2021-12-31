@@ -55,3 +55,22 @@ jobs:
       - run: ../all.bash
         shell: bash
         working-directory: tests/error-handling/mini-project2
+
+  Self-Update:
+    runs-on: ubuntu-latest
+    needs: [ Check_scripts ]
+    name: Self-update on mini-project3
+    steps:
+      - uses: actions/checkout@v2
+      - run: ../all.bash
+        shell: bash
+        working-directory: tests/self-update/mini-project3
+
+  Make-Init:
+    runs-on: ubuntu-latest
+    needs: [ Check_scripts ]
+    name: Testing `make init`
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./tests/init/all.bash
+        shell: bash

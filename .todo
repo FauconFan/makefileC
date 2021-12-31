@@ -5,10 +5,6 @@ Questions:
 	☐ State of art for unit testing and black box testing
 	☐ Why recursively includes subfolders of INC_FOLDER (explain why in README)
 
-Bugs:
-	✔ When names changed in config files, binaries are not relinked @done(21-12-13 19:06)
-	☐ When directory names changed, deps file are not updated, needs to get an appropriate behavior
-
 Core Features:
 	✔ basic rules all, clean, fclean, re @done(21-11-27 12:26)
 	✔ make (re)debug @done(21-11-27 12:26)
@@ -18,23 +14,29 @@ Core Features:
 	✔ Multithread @done(21-11-27 12:26)
 	✔ Out-of-source @done(21-11-27 12:26)
 	✔ Document Configuration @done(21-12-08 21:11)
-	☐ `make help`
-	☐ release
-	☐ Self update (autocheck if new version)
-	☐ Self init (able to setup hello-world with just makefile)
+	✔ `make help` @done(21-12-16 17:08)
+	✔ release @done(21-12-29 21:14)
+	✔ Self update (autocheck if new version) @done(21-12-29 21:14)
+	✔ Self init (able to setup hello-world with just makefile) @done(21-12-31 14:34)
 
 	Core Extended:
-		☐ Support cpp
-		☐ Declare what lang (C, CPP, MIXED)
 		☐ Declare what goal is (binary, library static/dynamic)
 		☐ Subprojects (call and indentation)
 		☐ Install/Uninstall rule
 
+	Core with CPP:
+		☐ Support cpp
+		☐ Declare what lang (C, CPP, MIXED)
+
 	Tests:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
+		☐ Test default rule (no target)
+		☐ Test for error-handling if the output is the same, whatever the target
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
-		☐ Design a benchmark suite
+		☐ test different values of TERM (How ?)
+		☐ make help compared with README.md
+		☐ Design a benchmark suite compared to a minimal Makefile with no fancy stuff
 
 	Examples:
 		☐ Implement a small utility to copy files and directories with GUI
@@ -49,9 +51,11 @@ Core Features:
 		☐ Check prerequisites of the makefile (shell calls)
 		✘ Verify that minimal folders exists (no need) @cancelled(21-12-12 17:57)
 		☐ Check if variables are being redefined in config file (check if valuable)
-		☐ Check if NAME or NAME_DEBUG is a keywork in the Makefile definition
+		☐ Appropriate message if target not exists
+		☐ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition
 		☐ Check if NAME and NAME_DEBUG are the same
 		☐ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER
+		☐ Check content of actual folder when doing make init
 
 	Lint, unit tests and black boxes:
 		☐ Create a dockerfile that is easily changeable, upon configuration
@@ -60,6 +64,10 @@ Core Features:
 		☐ Test coverage report (from tests)
 		☐ Check memory leaks (from tests)
 
+	Bugs:
+		☐ When directory names changed, deps file are not updated, it leads to wrong unspecified behavior, needs to get an appropriate behavior
+
 Unprioritized:
 	☐ Support Windows and MacOS
 	☐ Look checkmake in case it becomes really interesting
+	☐ Good practices: https://tech.davis-hansson.com/p/make/
