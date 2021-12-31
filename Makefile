@@ -163,6 +163,7 @@ _SCT_TARGETS := \
 	redebug				$(call _merge_words,Alias for \"make fclean && make debug\") \
 	self_update			$(call _merge_words,Self update from remote if new version is available) \
 	self_update_ignore	$(call _merge_words,Ignore self reminder for a short time) \
+	init				$(call _merge_words,Initialize the project (at start only)) \
 	help				$(call _merge_words,Prints this message) \
 
 _SCT_TARGETS_NAMES      := $(call _select_mod,$(_SCT_TARGETS), 0, 2)
@@ -263,7 +264,8 @@ define _print_help
 	printf "\\n"
 	printf "Here is the list of targets:\\n"
 	$(call _foreach2, target, description,$(_SCT_TARGETS), \
-		printf "  make %s%-20s%s %s\\n" \
+		printf "%2s%-2smake %s%-25s%s %s\\n" \
+			"" "-" \
 			"$(_CYAN)" "@target" "$(_END)" \
 			"@description";)
 endef
