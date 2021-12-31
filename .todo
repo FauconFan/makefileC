@@ -17,7 +17,7 @@ Core Features:
 	✔ `make help` @done(21-12-16 17:08)
 	✔ release @done(21-12-29 21:14)
 	✔ Self update (autocheck if new version) @done(21-12-29 21:14)
-	☐ Self init (able to setup hello-world with just makefile)
+	✔ Self init (able to setup hello-world with just makefile) @done(21-12-31 14:34)
 
 	Core Extended:
 		☐ Support cpp
