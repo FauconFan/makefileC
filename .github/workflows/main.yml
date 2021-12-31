@@ -1,7 +1,7 @@
 name: Main
 on: [ push, pull_request ]
 jobs:
-  Check_scripts:
+  Check_Scripts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +17,7 @@ jobs:
 
   Compilation:
     runs-on: ubuntu-latest
-    needs: [ Check_scripts, Compilation_Precheck ]
+    needs: [ Check_Scripts, Compilation_Precheck ]
     strategy:
       fail-fast: false
       matrix:
@@ -38,7 +38,7 @@ jobs:
 
   Configuration:
     runs-on: ubuntu-latest
-    needs: [ Check_scripts ]
+    needs: [ Check_Scripts ]
     name: Configuration on mini-project
     steps:
       - uses: actions/checkout@v2
@@ -46,29 +46,29 @@ jobs:
         shell: bash
         working-directory: tests/configuration/mini-project
 
-  Error-Handling:
+  Error_Handling:
     runs-on: ubuntu-latest
-    needs: [ Check_scripts ]
-    name: Error-handling on mini-project2
+    needs: [ Check_Scripts ]
+    name: Error_Handling on mini-project2
     steps:
       - uses: actions/checkout@v2
       - run: ../all.bash
         shell: bash
         working-directory: tests/error-handling/mini-project2
 
-  Self-Update:
+  Self_Update:
     runs-on: ubuntu-latest
-    needs: [ Check_scripts ]
-    name: Self-update on mini-project3
+    needs: [ Check_Scripts ]
+    name: Self_Update on mini-project3
     steps:
       - uses: actions/checkout@v2
       - run: ../all.bash
         shell: bash
         working-directory: tests/self-update/mini-project3
 
-  Make-Init:
+  Make_Init:
     runs-on: ubuntu-latest
-    needs: [ Check_scripts ]
+    needs: [ Check_Scripts ]
     name: Testing `make init`
     steps:
       - uses: actions/checkout@v2
