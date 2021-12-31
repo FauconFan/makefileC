@@ -69,7 +69,7 @@ jobs:
   Make-Init:
     runs-on: ubuntu-latest
     needs: [ Check_scripts ]
-    name: make init
+    name: Testing \`make init\`
     steps:
       - uses: actions/checkout@v2
       - run: ./tests/init/all.bash
