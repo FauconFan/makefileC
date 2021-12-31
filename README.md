@@ -2,7 +2,7 @@
 
 # The (ultimate project manager) Makefile [![Main](https://github.com/FauconFan/makefileC/actions/workflows/main.yml/badge.svg)](https://github.com/FauconFan/makefileC/actions/workflows/main.yml)
 
-This is the summary of my experience applied to programming in C and C++. My ambition is to put together all good practices and necessary features of a well-driven C or C++ project. I would like to include good compilation, sub-projects, static analyzers, and testing processes.
+This is the summary of my experience applied to programming in C. My ambition is to put together all good practices and necessary features of a well-driven C project. I would like to include good compilation, sub-projects, static analyzers, and testing processes.
 
 I want this makefile to be easy to use, easy to get started with and well-documented.
 

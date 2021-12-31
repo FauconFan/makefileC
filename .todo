@@ -20,11 +20,13 @@ Core Features:
 	✔ Self init (able to setup hello-world with just makefile) @done(21-12-31 14:34)
 
 	Core Extended:
-		☐ Support cpp
-		☐ Declare what lang (C, CPP, MIXED)
 		☐ Declare what goal is (binary, library static/dynamic)
 		☐ Subprojects (call and indentation)
 		☐ Install/Uninstall rule
+
+	Core with CPP:
+		☐ Support cpp
+		☐ Declare what lang (C, CPP, MIXED)
 
 	Tests:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
