@@ -20,6 +20,7 @@ export SRC_FOLDER
 export INC_FOLDER
 
 . "${SCRIPT_DIR}"/_all_targets.bash
+. "${SCRIPT_DIR}"/_default.bash
 . "${SCRIPT_DIR}"/_all_vs_debug.bash
 . "${SCRIPT_DIR}"/_fclean.bash
 . "${SCRIPT_DIR}"/_verbose.bash
