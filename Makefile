@@ -736,12 +736,6 @@ self_update:
 	@ $(call _print_self_update)
 	@ $(_SELF_CMD_UPDATE)
 
-######### Manage printing variables for CI purposes (not documented in the API)
-
-.PHONY: _printvar_%
-_printvar_%:
-	@ echo $($*)
-
 endif #endif of error reporting
 
 ######### Manage init
@@ -760,3 +754,9 @@ init:
 	@ mv main.h inc/
 
 endif
+
+######### Manage printing variables for CI purposes (not documented in the API)
+
+.PHONY: _printvar_%
+_printvar_%:
+	@ echo $($*)
