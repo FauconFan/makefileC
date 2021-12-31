@@ -14,25 +14,11 @@ The ultimate makefile must be ***intuitive***, ***simple***, ***configurable***,
 
 ## Getting Started
 
-Basically you can copy/paste the whole content of the makefile into your project. You can then create a file called `config.mk`, run `make` and follow the instructions, you can also use the default template available in this repository as `template.config.mk`.
+Basically you can copy/paste the whole content of the makefile into your project. You can then use `make init` in order to have a minimal viable project. This will create the minimal file you need in order to start your project.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/FauconFan/makefileC/master/Makefile -o Makefile
-```
-
-Then create the `config.mk` file and follow the instructions from `make`
-
-```bash
-touch config.mk
-make
-```
-
-OR
-
-You can use the default template:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/FauconFan/makefileC/master/template.config.mk -o config.mk
+make init
 ```
 
 ## Features
@@ -43,6 +29,8 @@ curl -fsSL https://raw.githubusercontent.com/FauconFan/makefileC/master/template
   - `make fclean`: remove all binaries and generated files
   - `make re`: shortcut for `make fclean && make all`
 - Debug mode `make debug` and `make redebug`
+- Help command `make help`
+- Init command `make init` (when starting a new project only)
 - Verbose mode with VERBOSE=1 `make VERBOSE=1 [target]` (prints out meaningful commands)
 - Compile or recompile only if necessary (source files as well as header files)
 - If no file needs to be recompiled, nothing is done (no relink)

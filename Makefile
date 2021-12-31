@@ -153,7 +153,7 @@ _foreach2			= $(if $(strip $(3)), \
 ######### Self config tables (or SCT)
 
 # Columns:
-#   rule	description
+#   rule				description
 _SCT_TARGETS := \
 	all					$(call _merge_words,Builds the release binary) \
 	clean				$(call _merge_words,Removes generated files except binaries) \
@@ -192,6 +192,66 @@ _SCT_VARIABLES_MANDATORY := $(call _select_on_mod,$(_SCT_VARIABLES), 0, 2, 1, TR
 
 ###############################################################################
 #########                                                            ##########
+#########              PRELUDE - default content (init)              ##########
+#########                                                            ##########
+###############################################################################
+
+define _DEFAULT_CONFIG_MK_CONTENT
+
+# Name of the binary
+NAME = output
+NAME_DEBUG = output-debug
+
+# Folder constants
+## folder that contains the headers files [.h]
+INC_FOLDER = inc/
+## folder that contains the source files [.c]
+SRC_FOLDER = src/
+## folder that contains the object and dependency files [.[od]]
+BUILD_FOLDER = build/
+
+# Makefile built-ins variables
+## CC compiler
+CC = clang
+## C Flags
+CFLAGS_COMMON = -Wall -Wextra -Werror -Weverything -pedantic -std=c17
+CFLAGS_RELEASE = -O2 -DNDEBUG
+CFLAGS_DEBUG = -O0 -ggdb -DDEBUG
+## LD Flags
+LDFLAGS =
+## Libs Flags
+LDLIBS =
+
+# Exhaustive list of the source files (base dir is $$(SRC_FOLDER))
+# All your source code files must be in $$(SRC_FOLDER)
+SRC = $\\
+	main.c $\\
+
+endef
+
+define _DEFAULT_MAIN_C_CONTENT
+#include "main.h"
+
+int		main(int argc, char **argv, char **envp) {
+	(void) argc;
+	(void) argv;
+	(void) envp;
+	printf("Hello World\n");
+	return 0;
+}
+endef
+
+define _DEFAULT_MAIN_H_CONTENT
+#ifndef MAIN_H
+# define MAIN_H
+
+# include <stdio.h>
+
+#endif
+endef
+
+###############################################################################
+#########                                                            ##########
 #########               PRELUDE - helpers for printing               ##########
 #########                                                            ##########
 ###############################################################################
@@ -212,7 +272,7 @@ define _print_name
 	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
-		"$(_)" "$(_NAME_TARGET)" "$(_END)" ""
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
 endef
 
 define _print_nothing_to_relink
@@ -224,6 +284,12 @@ define _print_cmd # 1:cmd
 	printf " %s[ CMD ]%s %s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(1)"
+endef
+
+define _print_init
+	printf " %s[ INFO ]%s %sInitialization%s of the project\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_GREEN)" "$(_END)"
 endef
 
 define _print_progress # 1:name of file to compile as argument
@@ -497,7 +563,18 @@ endif #endif of include _CONFIG_FILE
 #########                                                            ##########
 ###############################################################################
 
+_ALLOW_INIT_WHEN_MISSING_FILE = 0
+
 ifeq ($(_HAS_ERROR),1)
+ifeq ($(_HAS_ERROR_MISSING_CONFIG_FILE),1)
+ifeq ($(MAKECMDGOALS),init)
+_ALLOW_INIT_WHEN_MISSING_FILE = 1
+endif
+endif
+endif
+
+ifeq ($(_HAS_ERROR),1)
+ifeq ($(_ALLOW_INIT_WHEN_MISSING_FILE),0)
 
 .PHONY: default
 default:
@@ -519,8 +596,9 @@ endif
 ifneq ($(MAKECMDGOALS),)
 $(MAKECMDGOALS): default
 endif
+endif
 
-else # will end at end of Makefile
+else # will end at end of Makefile (before init)
 
 ###############################################################################
 #########                                                            ##########
@@ -552,7 +630,7 @@ default: all
 .PHONY: all
 all: _show_self_update $(_NAME_TARGET)
 
-$(_NAME_TARGET): _INIT $(_OBJ)
+$(_NAME_TARGET): _precomp $(_OBJ)
 	@ ! test "$(_NB_TO_COMP)" -eq 0 || $(call _print_nothing_to_relink)
 	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
 	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_name)
@@ -576,10 +654,10 @@ endif
 
 # Computes the number of files that will be recompiled and store it in _NB_TO_COMP
 # The second eval manages to check somehow the final binary has been removed
-#   The structure of the makefile will not be able to relink because of the _INIT target
+#   The structure of the makefile will not be able to relink because of the _precomp target
 #   So we increment the _NB_TO_COMP by one in order to force it
-.PHONY: _INIT
-_INIT:
+.PHONY: _precomp
+_precomp:
 	@ $(eval _NB_TO_COMP := \
 		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) _IGNORE_SELF_UPDATE=1 $(_OBJ) | grep +1 | wc -l))
 	@ $(eval _NB_TO_COMP := \
@@ -658,3 +736,20 @@ _printvar_%:
 	@ echo $($*)
 
 endif #endif of error reporting
+
+######### Manage init
+
+ifeq ($(_ALLOW_INIT_WHEN_MISSING_FILE),1)
+
+.PHONY: init
+init:
+	@ $(call _print_init)
+	@ mkdir inc
+	@ mkdir src
+	@ $(file > config.mk,$(_DEFAULT_CONFIG_MK_CONTENT))
+	@ $(file > main.c,$(_DEFAULT_MAIN_C_CONTENT))
+	@ $(file > main.h,$(_DEFAULT_MAIN_H_CONTENT))
+	@ mv main.c src/
+	@ mv main.h inc/
+
+endif

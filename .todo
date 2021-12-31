@@ -53,6 +53,7 @@ Core Features:
 		☐ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition
 		☐ Check if NAME and NAME_DEBUG are the same
 		☐ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER
+		☐ Check content of actual folder when doing make init
 
 	Lint, unit tests and black boxes:
 		☐ Create a dockerfile that is easily changeable, upon configuration
