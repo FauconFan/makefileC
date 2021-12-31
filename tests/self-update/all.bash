@@ -8,6 +8,11 @@ if [ ! "$(git rev-parse --show-prefix)" = "tests/self-update/mini-project3/" ]; 
 	exit 1
 fi
 
+if [ -z "$(diff Makefile "${PATH_LOCAL_LATEST}")" ]; then
+	echo "Can't pursue test because difference with master are the same"
+	exit 0
+fi
+
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 make fclean

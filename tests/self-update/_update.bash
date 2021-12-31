@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ -z "$(diff Makefile "${PATH_LOCAL_LATEST}")" ]; then
-	echo "Can't pursue test because difference with master are the same"
-	exit 0
-fi
-
 EXIT_STATUS=0
 
 # Remove symbolic link
