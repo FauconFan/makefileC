@@ -230,8 +230,8 @@ LDLIBS =
 
 # Exhaustive list of the source files (base dir is $$(SRC_FOLDER))
 # All your source code files must be in $$(SRC_FOLDER)
-SRC = $\\
-	main.c $\\
+SRC = $(shell echo \)
+	main.c $(shell echo \)
 
 endef
 
@@ -362,6 +362,9 @@ define _print_missing_config_mk
 	printf " %s[ INFO ]%s \`%s\` is missing\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)"
+	printf " %s[ INFO ]%s if your folder is empty, you may use \`make %sinit%s\` to initialize a minimal project\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CYAN)" "$(_END)"
 endef
 
 define _print_unauthorized_variables # 1:list of unauthorized variables
