@@ -23,7 +23,7 @@ Core Features:
 		☐ Declare what goal is (binary, library static/dynamic)
 		☐ Subprojects (call and indentation)
 		☐ Install/Uninstall rule
-w
+
 	Core with CPP:
 		☐ Support cpp
 		☐ Declare what lang (C, CPP, MIXED)
