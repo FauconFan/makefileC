@@ -51,6 +51,11 @@ testAllTargetsSameOutput ""
 testAllTargetsSameOutput ../11-too-few-variables.config.mk
 testAllTargetsSameOutput ../12-too-much-variables.config.mk
 testAllTargetsSameOutput ../13-specified-files-missing.mk
-testAllTargetsSameOutput ../14-presence-unspecified-files.mk
+testAllTargetsSameOutput ../14-name-is-keyword.mk
+testAllTargetsSameOutput ../15-name-debug-is-keyword.mk
+testAllTargetsSameOutput ../16-name-equals-name-debug.mk
+testAllTargetsSameOutput ../17-srcdir-same-as-builddir.mk
+testAllTargetsSameOutput ../18-incdir-same-as-builddir.mk
+testAllTargetsSameOutput ../19-presence-unspecified-files.mk
 
 rm -f config.mk

@@ -299,7 +299,8 @@ define _print_init
 		"$(_GREEN)" "$(_END)"
 endef
 
-define _print_progress # 1:name of file to compile as argument
+# $1 : name of file to compile as argument
+define _print_progress
 	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" \
 		"$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
@@ -339,7 +340,8 @@ define _print_clean_build_dir
 		"$(_RED)" "$(_END)"
 endef
 
-define _print_clean_bin # 1: name of the file that was removed
+# $1 : name of the file that was removed
+define _print_clean_bin
 	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_RED)" "$(_END)" \
@@ -367,21 +369,61 @@ define _print_missing_config_mk
 		"$(_CYAN)" "$(_END)"
 endef
 
-define _print_unauthorized_variables # 1:list of unauthorized variables
+# $1 : list of unauthorized variables
+define _print_unauthorized_variables
 	$(foreach err,$(1), \
 		printf " %s[ INFO ]%s Cannot define variable: %s\\n" \
 			"$(_CYAN)" "$(_END)" \
 			"$(err)";)
 endef
 
-define _print_missing_variables # 1:list of missing variables
+# $1 : list of missing variables
+define _print_missing_variables
 	$(foreach err,$(1), \
 		printf " %s[ INFO ]%s Variable not defined: %s\\n" \
 			"$(_CYAN)" "$(_END)" \
 			"$(err)";)
 endef
 
-define _print_missing_files # 1:list of files in spec but no exist, 2:list of files that exist but not in spec
+# $1 : value of the word
+# $2 : identifier of the word
+define _print_smtg_is_keyword
+	printf " %s[ INFO ]%s the value of %s is a keyword of the Makefile\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(2)"
+	printf " %s[ INFO ]%s   actual value: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(1)"
+	printf " %s[ INFO ]%s   forbidden values: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_SCT_TARGETS_NAMES)"
+endef
+
+define _print_name_equals_name_debug
+	printf " %s[ INFO ]%s the value of NAME is the same as the value of NAME_DEBUG\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   actual value of NAME: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_NAME)"
+	printf " %s[ INFO ]%s   actual value of NAME_DEBUG: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_NAME_DEBUG)"
+endef
+
+# $1 : value of the word
+# $2 : identifier of the word
+define _print_builddir_same_as_smtg
+	printf " %s[ INFO ]%s the value of %s is the same as BUILD_FOLDER\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(2)"
+	printf " %s[ INFO ]%s   actual value: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(1)"
+endef
+
+# $1 : list of files in spec but no exist
+# $2 : list of files that exist but not in spec
+define _print_unauthorized_files
 	$(foreach file, $(1), \
 		printf " %s[ INFO ]%s This file is in the config file (\`%s\`) but doesn't exist: %s\\n" \
 			"$(_CYAN)" "$(_END)" \
@@ -479,6 +521,11 @@ _HAS_ERROR                               := 0
 _HAS_ERROR_MISSING_CONFIG_FILE           := 0
 _HAS_ERROR_UNAUTHORIZED_VARIABLES        := 0
 _HAS_ERROR_MISSING_VARIABLES             := 0
+_HAS_ERROR_NAME_IS_KEYWORD               := 0
+_HAS_ERROR_NAME_DEBUG_IS_KEYWORD         := 0
+_HAS_ERROR_NAME_EQUALS_NAME_DEBUG        := 0
+_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR       := 0
+_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR       := 0
 _HAS_ERROR_UNCONSISTENT_FILES            := 0
 
 _CONFIG_FILE := ./config.mk
@@ -546,6 +593,33 @@ _LDLIBS     := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
 _CFLAGS     := $(CFLAGS_COMMON) $(if $(filter 0, $(_DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
 
+######### Checking mistakes on NAME or NAME_DEBUG
+
+ifneq ($(filter $(_NAME),$(_SCT_TARGETS_NAMES)),)
+_HAS_ERROR = 1
+_HAS_ERROR_NAME_IS_KEYWORD = 1
+endif
+
+ifneq ($(filter $(_NAME_DEBUG),$(_SCT_TARGETS_NAMES)),)
+_HAS_ERROR = 1
+_HAS_ERROR_NAME_DEBUG_IS_KEYWORD = 1
+endif
+
+ifeq ($(_NAME),$(_NAME_DEBUG))
+_HAS_ERROR = 1
+_HAS_ERROR_NAME_EQUALS_NAME_DEBUG = 1
+endif
+
+ifeq ($(_BUILD_FOLDER),$(_SRC_FOLDER))
+_HAS_ERROR = 1
+_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR = 1
+endif
+
+ifeq ($(_BUILD_FOLDER),$(_INC_FOLDER))
+_HAS_ERROR = 1
+_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR = 1
+endif
+
 ######### Generating variables for files
 
 _SRC := $(SRC:%.c=$(_SRC_FOLDER)%.c)
@@ -597,8 +671,23 @@ endif
 ifeq ($(_HAS_ERROR_MISSING_VARIABLES),1)
 	@ $(call _print_missing_variables, $(_ERRORS_MISSING_VARIABLES))
 endif
+ifeq ($(_HAS_ERROR_NAME_IS_KEYWORD),1)
+	@ $(call _print_smtg_is_keyword,$(_NAME),NAME)
+endif
+ifeq ($(_HAS_ERROR_NAME_DEBUG_IS_KEYWORD),1)
+	@ $(call _print_smtg_is_keyword,$(_NAME_DEBUG),NAME_DEBUG)
+endif
+ifeq ($(_HAS_ERROR_NAME_EQUALS_NAME_DEBUG),1)
+	@ $(call _print_name_equals_name_debug)
+endif
+ifeq ($(_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR),1)
+	@ $(call _print_builddir_same_as_smtg,$(_SRC_FOLDER),SRC_FOLDER)
+endif
+ifeq ($(_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR),1)
+	@ $(call _print_builddir_same_as_smtg,$(_INC_FOLDER),INC_FOLDER)
+endif
 ifeq ($(_HAS_ERROR_UNCONSISTENT_FILES),1)
-	@ $(call _print_missing_files, $(_ERRORS_SRC_SPEC_NO_EXISTS), $(_ERRORS_SRC_EXISTS_NO_SPEC))
+	@ $(call _print_unauthorized_files, $(_ERRORS_SRC_SPEC_NO_EXISTS), $(_ERRORS_SRC_EXISTS_NO_SPEC))
 endif
 	@ $(call _print_end_error_reporting)
 	@ false

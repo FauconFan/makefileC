@@ -48,14 +48,14 @@ Core Features:
 		✔ Unauthorized variables are defined @done(21-11-27 12:28)
 		✔ Specified files are missing @done(21-11-27 12:28)
 		✔ Presence of unspecified files @done(21-11-27 12:28)
-		☐ Check prerequisites of the makefile (shell calls)
-		✘ Verify that minimal folders exists (no need) @cancelled(21-12-12 17:57)
-		☐ Check if variables are being redefined in config file (check if valuable)
 		☐ Appropriate message if target not exists
-		☐ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition
-		☐ Check if NAME and NAME_DEBUG are the same
-		☐ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER
+		✔ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition @done(22-01-05 17:31)
+		✔ Check if NAME and NAME_DEBUG are the same @done(22-01-05 17:35)
+		✔ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER @done(22-01-05 18:07)
 		☐ Check content of actual folder when doing make init
+		Check if valuable:
+			☐ Check if variables are being redefined in config file
+			☐ Check prerequisites of the makefile (shell calls)
 
 	Lint, unit tests and black boxes:
 		☐ Create a dockerfile that is easily changeable, upon configuration
