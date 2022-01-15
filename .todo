@@ -34,7 +34,7 @@ Core Features:
 		✔ Test for error-handling if the output is the same, whatever the target @done(21-12-31 16:58)
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
-		☐ Test different values of TERM (How ?)
+		☐ Test different values of TERM (How ?) and NO_COLORS variable
 		✔ make help compared with README.md @done(22-01-15 15:13)
 		☐ Design a benchmark suite compared to a minimal Makefile with no fancy stuff
 

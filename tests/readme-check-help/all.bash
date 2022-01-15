@@ -9,13 +9,18 @@ fi
 
 TMPDIR="$(mktemp -d)"
 
-make help > "${TMPDIR}/output_help.txt"
+# Extract help without colors from Makefile
+make help NO_COLORS=1 > "${TMPDIR}/output_help.txt"
+
+# Determine number of lines printed
 _NB_LINES="$(wc -l < "${TMPDIR}/output_help.txt")"
 
+# Extract make help routine in README
 grep "\$> make help" -A "${_NB_LINES}" \
 	< ../../../README.md \
-	| grep -v "\$> make help"> "${TMPDIR}/make_help_on_readme.txt"
+	| grep -v "\$> make help" > "${TMPDIR}/make_help_on_readme.txt"
 
+# Check no difference
 diff "${TMPDIR}/output_help.txt" "${TMPDIR}/make_help_on_readme.txt"
 
 rm -rf "${TMPDIR}"

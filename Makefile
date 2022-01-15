@@ -18,6 +18,8 @@ _SELF_URL_RELEASE    := https://raw.githubusercontent.com/FauconFan/$(_SELF_PROJ
 
 ######### Define termcap values if possible
 
+ifneq ($(NO_COLORS),1)
+
 _RED		:= $(shell tput setaf 1 2> /dev/null || echo -n "")
 _GREEN		:= $(shell tput setaf 2 2> /dev/null || echo -n "")
 _YELLOW		:= $(shell tput setaf 3 2> /dev/null || echo -n "")
@@ -27,14 +29,18 @@ _CYAN		:= $(shell tput setaf 6 2> /dev/null || echo -n "")
 _WHITE		:= $(shell tput setaf 7 2> /dev/null || echo -n "")
 _END		:= $(shell tput sgr0 2> /dev/null || echo -n "")
 
-_RED		:= 
-_GREEN		:= 
-_YELLOW		:= 
-_BLUE		:= 
-_PURPLE		:= 
-_CYAN		:= 
-_WHITE		:= 
-_END		:= 
+else
+
+_RED		:= $(shell echo -n "")
+_GREEN		:= $(shell echo -n "")
+_YELLOW		:= $(shell echo -n "")
+_BLUE		:= $(shell echo -n "")
+_PURPLE		:= $(shell echo -n "")
+_CYAN		:= $(shell echo -n "")
+_WHITE		:= $(shell echo -n "")
+_END		:= $(shell echo -n "")
+
+endif
 
 ######### "Constants"
 
@@ -283,11 +289,14 @@ define _print_help
 			"$(_CYAN)" "@target" "$(_END)" \
 			"@description";)
 	printf "\\n"
-	printf "  You can also provide an extra variable called VERBOSE.\\n"
-	printf "  This variable looks like a boolean variable, its value is either 0 or 1.\\n"
-	printf "  Its default value is 0.\\n"
-	printf "  If enabled, meaningful commands are printed. A non-meaningful command is a print command, create directories, etc.\\n"
-	printf "    ex: \`make %sre%s VERBOSE=1\`\\n" "$(_CYAN)" "$(_END)"
+	printf "  You can also provide two extra variables:\\n"
+	printf "  - VERBOSE (default: 0):\\n"
+	printf "      If enabled, meaningful commands are printed.\\n"
+	printf "      A non-meaningful command is a print command, create directories, etc.\\n"
+	printf "        ex: \`make %sre%s VERBOSE=1\`\\n" "$(_CYAN)" "$(_END)"
+	printf "  - NO_COLORS (default: 0):\\n"
+	printf "      If enabled, no colors will be printed\\n"
+	printf "        ex: \`make %shelp%s NO_COLORS=1\`\\n" "$(_CYAN)" "$(_END)"
 endef
 
 define _print_name

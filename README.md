@@ -102,9 +102,12 @@ Here is the list of targets:
   - make init                      Initialize the project (at start only)
   - make help                      Prints this message
 
-  You can also provide an extra variable called VERBOSE.
-  This variable looks like a boolean variable, its value is either 0 or 1.
-  Its default value is 0.
-  If enabled, meaningful commands are printed. A non-meaningful command is a print command, create directories, etc.
-    ex: `make re VERBOSE=1`
+  You can also provide two extra variables:
+  - VERBOSE (default: 0):
+      If enabled, meaningful commands are printed.
+      A non-meaningful command is a print command, create directories, etc.
+        ex: `make re VERBOSE=1`
+  - NO_COLORS (default: 0):
+      If enabled, no colors will be printed
+        ex: `make help NO_COLORS=1`
 ```
