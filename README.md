@@ -82,24 +82,29 @@ In the `config.mk` file, some variables can be defined. We have two types of var
 | LDFLAGS | Library flags given to compiler such as '-L' | |
 | LDLIBS | Library flags given to compiler such as '-l' | |
 
-## Availables commands of `make`
+## Available commands of `make`
 
 Once all the necessary variables are available, a few commands are available:
 
+```bash
+$> make help
+Usage: make [target]
+
 Here is the list of targets:
-- `make all`                       Builds the release binary
-- `make clean`                     Removes generated files except binaries
-- `make fclean`                    Removes all generated files
-- `make re`                        Alias for "make fclean && make all"
-- `make debug`                     Same as "make all" except it uses debug flags
-- `make redebug`                   Alias for "make fclean && make debug"
-- `make self_update`               Self update from remote if new version is available
-- `make self_update_ignore`        Ignore self reminder for a short time
-- `make init`                      Initialize the project (at start only)
-- `make help`                      Prints this message
+  - make all                       Builds the release binary
+  - make clean                     Removes generated files except binaries
+  - make fclean                    Removes all generated files
+  - make re                        Alias for "make fclean && make all"
+  - make debug                     Same as "make all" except it uses debug flags
+  - make redebug                   Alias for "make fclean && make debug"
+  - make self_update               Self update from remote if new version is available
+  - make self_update_ignore        Ignore self reminder for a short time
+  - make init                      Initialize the project (at start only)
+  - make help                      Prints this message
 
-There is also one additional variable that can be provided through command line: VERBOSE. This variable looks like a boolean variable, its value is either 0 or 1. Its default value is 0.
-
-If VERBOSE is enabled (=1), meaningful commands are printed. A non-meaningful command is a print command, creating directories, ... 
-
-ex: `make re VERBOSE=1`
+  You can also provide an extra variable called VERBOSE.
+  This variable looks like a boolean variable, its value is either 0 or 1.
+  Its default value is 0.
+  If enabled, meaningful commands are printed. A non-meaningful command is a print command, create directories, etc.
+    ex: `make re VERBOSE=1`
+```

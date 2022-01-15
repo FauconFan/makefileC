@@ -34,4 +34,8 @@ pushd tests/self-update/mini-project3
 ../all.bash
 popd
 
+pushd tests/readme-check-help/mini-project4
+../all.bash
+popd
+
 ./tests/init/all.bash

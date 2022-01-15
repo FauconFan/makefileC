@@ -27,6 +27,15 @@ _CYAN		:= $(shell tput setaf 6 2> /dev/null || echo -n "")
 _WHITE		:= $(shell tput setaf 7 2> /dev/null || echo -n "")
 _END		:= $(shell tput sgr0 2> /dev/null || echo -n "")
 
+_RED		:= 
+_GREEN		:= 
+_YELLOW		:= 
+_BLUE		:= 
+_PURPLE		:= 
+_CYAN		:= 
+_WHITE		:= 
+_END		:= 
+
 ######### "Constants"
 
 _empty				:=
@@ -273,6 +282,12 @@ define _print_help
 			"" "-" \
 			"$(_CYAN)" "@target" "$(_END)" \
 			"@description";)
+	printf "\\n"
+	printf "  You can also provide an extra variable called VERBOSE.\\n"
+	printf "  This variable looks like a boolean variable, its value is either 0 or 1.\\n"
+	printf "  Its default value is 0.\\n"
+	printf "  If enabled, meaningful commands are printed. A non-meaningful command is a print command, create directories, etc.\\n"
+	printf "    ex: \`make %sre%s VERBOSE=1\`\\n" "$(_CYAN)" "$(_END)"
 endef
 
 define _print_name
