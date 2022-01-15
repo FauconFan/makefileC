@@ -35,7 +35,7 @@ Core Features:
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
 		☐ Test different values of TERM (How ?)
-		☐ make help compared with README.md
+		✔ make help compared with README.md @done(22-01-15 15:13)
 		☐ Design a benchmark suite compared to a minimal Makefile with no fancy stuff
 
 	Examples:
