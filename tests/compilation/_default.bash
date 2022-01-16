@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ ! "${GOAL_MODE}" = "EXECUTABLE" ]; then
+	return 0
+fi
+
 TMP_DIR="$(mktemp -d)"
 
 make fclean

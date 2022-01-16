@@ -1,5 +1,7 @@
 #!/bin/bash
 
+make fclean
+
 ls -lRs > /tmp/tree_hierarchy # register project architecture for later
 
 ## Check that fclean full cleans on every command

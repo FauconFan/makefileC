@@ -11,6 +11,7 @@ NAME="./$(grep NAME < config.mk | grep -v NAME_DEBUG | cut -d'=' -f2 | xargs)"
 NAME_DEBUG="./$(grep NAME_DEBUG < config.mk | cut -d'=' -f2 | xargs)"
 SRC_FOLDER="$(grep "SRC_FOLDER *=" config.mk | cut -d'=' -f2 | xargs)"
 INC_FOLDER="$(grep "INC_FOLDER *=" config.mk | cut -d'=' -f2 | xargs)"
+GOAL_MODE="$(grep "GOAL *=" config.mk | cut -d'=' -f2 | xargs)"
 
 export ALL_RULES
 export EXCEPTED_RULES
@@ -18,6 +19,7 @@ export NAME
 export NAME_DEBUG
 export SRC_FOLDER
 export INC_FOLDER
+export GOAL_MODE
 
 . "${SCRIPT_DIR}"/_all_targets.bash
 . "${SCRIPT_DIR}"/_default.bash
