@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: test "$(find examples -mindepth 1 -maxdepth 1 | wc -l)" -eq 6
+      - run: test "$(find examples -mindepth 1 -maxdepth 1 | wc -l)" -eq 8
 
   Compilation:
     runs-on: ubuntu-latest
