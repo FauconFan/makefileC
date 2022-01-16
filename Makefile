@@ -201,6 +201,7 @@ _SCT_VARIABLES := \
 	INC_FOLDER			TRUE \
 	SRC_FOLDER			TRUE \
 	BUILD_FOLDER		TRUE \
+	HEADER_API			FALSE \
 	CC					FALSE \
 	CFLAGS_COMMON		FALSE \
 	CFLAGS_RELEASE		FALSE \
@@ -303,8 +304,22 @@ define _print_help
 	printf "        ex: \`make %shelp%s NO_COLORS=1\`\\n" "$(_CYAN)" "$(_END)"
 endef
 
-define _print_name
-	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" \
+define _print_executable
+	printf " %s[ INFO ]%s %sAssemble (executable)%s         %s\`%s\`%s  %-s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_GREEN)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
+endef
+
+define _print_libstatic
+	printf " %s[ INFO ]%s %sAssemble (static library)%s     %s\`%s\`%s  %-s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_GREEN)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
+endef
+
+define _print_libdynamic
+	printf " %s[ INFO ]%s %sAssemble (dynamic library)%s    %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
 		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
@@ -360,6 +375,20 @@ define _print_self_update_ignore
 	printf " %s[ INFO ]%s %sIgnore%s       reminder has been muted\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_PURPLE)" "$(_END)"
+endef
+
+define _print_install
+	printf " %s[ INFO ]%s %sInstall%s      %s\`%s\`%s  %-s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_GREEN)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
+endef
+
+define _print_uninstall
+	printf " %s[ INFO ]%s %sUninstall%s    %s\`%s\`%s  %-s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_RED)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
 endef
 
 define _print_clean_build_dir
@@ -460,6 +489,22 @@ define _print_builddir_same_as_smtg
 		"$(1)"
 endef
 
+define _print_header_api_not_needed_but_present
+	printf " %s[ INFO ]%s When goal is \"EXECUTABLE\", you cannot specify HEADER_API variable.\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   Please remove it from %s.\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)"
+endef
+
+define _print_header_api_needed_but_not_present
+	printf " %s[ INFO ]%s When goal is \"LIB_*\", you have to specify HEADER_API variable.\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   Please fill the variable with the path of a standalone header in %s.\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)"
+endef
+
 # $1 : list of files in spec but no exist
 # $2 : list of files that exist but not in spec
 define _print_unauthorized_files
@@ -556,17 +601,19 @@ endif
 #########                                                            ##########
 ###############################################################################
 
-_HAS_ERROR                               := 0
-_HAS_ERROR_MISSING_CONFIG_FILE           := 0
-_HAS_ERROR_UNAUTHORIZED_VARIABLES        := 0
-_HAS_ERROR_MISSING_VARIABLES             := 0
-_HAS_ERROR_GOAL_WRONG_VALUE              := 0
-_HAS_ERROR_NAME_IS_KEYWORD               := 0
-_HAS_ERROR_NAME_DEBUG_IS_KEYWORD         := 0
-_HAS_ERROR_NAME_EQUALS_NAME_DEBUG        := 0
-_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR       := 0
-_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR       := 0
-_HAS_ERROR_UNCONSISTENT_FILES            := 0
+_HAS_ERROR                                       := 0
+_HAS_ERROR_MISSING_CONFIG_FILE                   := 0
+_HAS_ERROR_UNAUTHORIZED_VARIABLES                := 0
+_HAS_ERROR_MISSING_VARIABLES                     := 0
+_HAS_ERROR_GOAL_WRONG_VALUE                      := 0
+_HAS_ERROR_NAME_IS_KEYWORD                       := 0
+_HAS_ERROR_NAME_DEBUG_IS_KEYWORD                 := 0
+_HAS_ERROR_NAME_EQUALS_NAME_DEBUG                := 0
+_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR               := 0
+_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR               := 0
+_HAS_ERROR_HEADER_API_NOT_NEEDED_BUT_PRESENT     := 0
+_HAS_ERROR_HEADER_API_NEEDED_BUT_NOT_PRESENT     := 0
+_HAS_ERROR_UNCONSISTENT_FILES                    := 0
 
 _CONFIG_FILE := ./config.mk
 
@@ -627,6 +674,10 @@ CFLAGS_DEBUG   ?= -O0 -DDEBUG -ggdb
 
 CFLAGS_COMMON  += -MMD
 
+ifeq ($(_GOAL),LIB_DYNAMIC)
+CFLAGS_COMMON  += -fPIC
+endif
+
 _CC         := $(if $(filter-out $(origin CC),default),$(CC),clang)
 _IFLAGS     := -I $(_INC_FOLDER)
 _LDFLAGS    := $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
@@ -664,6 +715,18 @@ endif
 ifeq ($(_BUILD_FOLDER),$(_INC_FOLDER))
 _HAS_ERROR = 1
 _HAS_ERROR_BUILDDIR_SAME_AS_INCDIR = 1
+endif
+
+ifeq ($(_GOAL),EXECUTABLE)
+ifdef HEADER_API
+_HAS_ERROR = 1
+_HAS_ERROR_HEADER_API_NOT_NEEDED_BUT_PRESENT = 1
+endif
+else
+ifndef HEADER_API
+_HAS_ERROR = 1
+_HAS_ERROR_HEADER_API_NEEDED_BUT_NOT_PRESENT = 1
+endif
 endif
 
 ######### Generating variables for files
@@ -735,6 +798,12 @@ endif
 ifeq ($(_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR),1)
 	@ $(call _print_builddir_same_as_smtg,$(_INC_FOLDER),INC_FOLDER)
 endif
+ifeq ($(_HAS_ERROR_HEADER_API_NOT_NEEDED_BUT_PRESENT),1)
+	@ $(call _print_header_api_not_needed_but_present)
+endif
+ifeq ($(_HAS_ERROR_HEADER_API_NEEDED_BUT_NOT_PRESENT),1)
+	@ $(call _print_header_api_needed_but_not_present)
+endif
 ifeq ($(_HAS_ERROR_UNCONSISTENT_FILES),1)
 	@ $(call _print_unauthorized_files, $(_ERRORS_SRC_SPEC_NO_EXISTS), $(_ERRORS_SRC_EXISTS_NO_SPEC))
 endif
@@ -772,7 +841,7 @@ endif
 
 ######### Core rules
 
-.PHONY: default
+.PHONY: defaultAR
 default: all
 
 .PHONY: all
@@ -780,8 +849,19 @@ all: _show_self_update $(_NAME_TARGET)
 
 $(_NAME_TARGET): _precomp $(_OBJ)
 	@ ! test "$(_NB_TO_COMP)" -eq 0 || $(call _print_nothing_to_relink)
+ifeq ($(_GOAL),EXECUTABLE)
 	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
-	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_name)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_executable)
+endif
+ifeq ($(_GOAL),LIB_STATIC)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(AR) rc $@ $(_OBJ))
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, ranlib $@)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_libstatic)
+endif
+ifeq ($(_GOAL),LIB_DYNAMIC)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(_CC) -shared $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_libdynamic)
+endif
 
 ifdef _COUNT_OBJS
 
@@ -838,6 +918,34 @@ fclean: _show_self_update _clean_build_dir _fclean_binaries
 
 .PHONY: re
 re: fclean all
+
+######### Install / Uninstall
+
+DESTDIR ?=
+PREFIX ?= /usr/local
+
+.PHONY: install
+install: fclean $(_NAME_TARGET)
+ifeq ($(_GOAL),EXECUTABLE)
+	@ $(call cmd, mkdir -p $(DESTDIR)$(PREFIX)/bin)
+	@ $(call cmd, cp $(_NAME_TARGET) $(DESTDIR)$(PREFIX)/bin/$(_NAME_TARGET))
+else
+	@ $(call cmd, mkdir -p $(DESTDIR)$(PREFIX)/lib)
+	@ $(call cmd, mkdir -p $(DESTDIR)$(PREFIX)/include)
+	@ $(call cmd, cp $(_NAME_TARGET) $(DESTDIR)$(PREFIX)/lib/$(_NAME_TARGET))
+	@ $(call cmd, cp $(_INC_FOLDER)$(HEADER_API) $(DESTDIR)$(PREFIX)/include/$(HEADER_API))
+endif
+	@ $(call _print_install)
+
+.PHONY: uninstall
+uninstall:
+ifeq ($(_GOAL),EXECUTABLE)
+	@ $(call cmd, rm -f $(DESTDIR)$(PREFIX)/bin/$(_NAME_TARGET))
+else
+	@ $(call cmd, rm -f $(DESTDIR)$(PREFIX)/lib/$(_NAME_TARGET))
+	@ $(call cmd, rm -f $(DESTDIR)$(PREFIX)/include/$(HEADER_API))
+endif
+	@ $(call _print_uninstall)
 
 ######### Manage debug
 

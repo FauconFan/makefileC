@@ -20,9 +20,9 @@ Core Features:
 	✔ Self init (able to setup hello-world with just makefile) @done(21-12-31 14:34)
 
 	Core Extended:
-		☐ Declare what goal is (binary, library static/dynamic)
+		✔ Declare what goal is (binary, library static/dynamic) @done(22-01-16 20:39)
 		☐ Subprojects (call and indentation)
-		☐ Install/Uninstall rule
+		✔ Install/Uninstall rule @done(22-01-16 20:39)
 
 	Core with CPP:
 		☐ Support cpp
@@ -32,6 +32,7 @@ Core Features:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
 		✔ Test default rule (no target) @done(21-12-31 16:36)
 		✔ Test for error-handling if the output is the same, whatever the target @done(21-12-31 16:58)
+		☐ Test all new errors introduced by handling libraries, install and subprojects
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
 		☐ Test different values of TERM (How ?) and NO_COLORS variable
@@ -56,9 +57,11 @@ Core Features:
 		✔ Check if NAME and NAME_DEBUG are the same @done(22-01-05 17:35)
 		✔ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER @done(22-01-05 18:07)
 		☐ Check content of actual folder when doing make init
+		☐ Check if user has rights to rights on directory
 		Check if valuable:
 			☐ Check if variables are being redefined in config file
 			☐ Check prerequisites of the makefile (shell calls)
+			☐ Check if naming conventions for libraries is respected
 
 	Lint, unit tests and black boxes:
 		☐ Create a dockerfile that is easily changeable, upon configuration
@@ -76,3 +79,5 @@ Unprioritized:
 	☐ Good introduction to the power of Make: https://gist.github.com/isaacs/62a2d1825d04437c6f08
 	☐ Good practices: https://tech.davis-hansson.com/p/make/
 	☐ Read this and look for improvement: https://www.oreilly.com/library/view/managing-projects-with/0596006101/ch10.html
+	☐ Best article found so far: http://nuclear.mutantstargoat.com/articles/make/
+	☐ Install dynamic libraries: https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html

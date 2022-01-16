@@ -27,7 +27,9 @@ jobs:
           "3-fibonacci",
           "4-fib-gcc",
           "5-subdirs",
-          "6-debug"
+          "6-debug",
+          "7-libmymath",
+          "8-libquotes"
         ]
     name: "Comp: On examples/${{ matrix.folder }}"
     steps:
