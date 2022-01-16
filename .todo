@@ -36,6 +36,7 @@ Core Features:
 		☐ Test progress status (How ?)
 		☐ Test different values of TERM (How ?) and NO_COLORS variable
 		✔ make help compared with README.md @done(22-01-15 15:13)
+		☐ Test whether dependencies are took into account (*.d)
 		☐ Design a benchmark suite compared to a minimal Makefile with no fancy stuff
 
 	Examples:
