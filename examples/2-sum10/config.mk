@@ -1,4 +1,7 @@
 
+# Goal Mode
+GOAL = EXECUTABLE
+
 # Name of the binary
 NAME = sum10
 NAME_DEBUG = sum10-debug

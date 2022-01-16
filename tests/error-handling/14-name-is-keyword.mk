@@ -1,3 +1,6 @@
+
+GOAL = EXECUTABLE
+
 NAME = help
 NAME_DEBUG = output-debug
 

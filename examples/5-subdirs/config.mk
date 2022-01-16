@@ -1,4 +1,7 @@
 
+# Goal Mode
+GOAL = EXECUTABLE
+
 # Name of the binary
 NAME = output
 NAME_DEBUG = output-debug

@@ -35,9 +35,11 @@ Core Features:
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
 		☐ Test different values of TERM (How ?) and NO_COLORS variable
+		☐ Test whether undefined variable is printed by Makefile
 		✔ make help compared with README.md @done(22-01-15 15:13)
 		☐ Test whether dependencies are took into account (*.d)
 		☐ Design a benchmark suite compared to a minimal Makefile with no fancy stuff
+		☐ Test the validity of this makefile in various distributions platforms (using Docker)
 
 	Examples:
 		☐ Implement a small utility to copy files and directories with GUI

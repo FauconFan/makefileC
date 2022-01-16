@@ -195,6 +195,7 @@ _SCT_SELF_UPDATE_IGNORE_DESCRIPTION := $(call _unmerge_words,$(strip $(call _sel
 # Columns:
 #   name variable		isMandatory
 _SCT_VARIABLES := \
+	GOAL				TRUE \
 	NAME				TRUE \
 	NAME_DEBUG			TRUE \
 	INC_FOLDER			TRUE \
@@ -218,6 +219,9 @@ _SCT_VARIABLES_MANDATORY := $(call _select_on_mod,$(_SCT_VARIABLES), 0, 2, 1, TR
 ###############################################################################
 
 define _DEFAULT_CONFIG_MK_CONTENT
+
+# Goal Mode
+GOAL = EXECUTABLE
 
 # Name of the binary
 NAME = output
@@ -545,6 +549,7 @@ _HAS_ERROR                               := 0
 _HAS_ERROR_MISSING_CONFIG_FILE           := 0
 _HAS_ERROR_UNAUTHORIZED_VARIABLES        := 0
 _HAS_ERROR_MISSING_VARIABLES             := 0
+_HAS_ERROR_GOAL_WRONG_VALUE              := 0
 _HAS_ERROR_NAME_IS_KEYWORD               := 0
 _HAS_ERROR_NAME_DEBUG_IS_KEYWORD         := 0
 _HAS_ERROR_NAME_EQUALS_NAME_DEBUG        := 0
@@ -617,7 +622,7 @@ _LDLIBS     := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
 _CFLAGS     := $(CFLAGS_COMMON) $(if $(filter 0, $(_DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
 
-######### Checking mistakes on NAME or NAME_DEBUG
+######### Check mistakes in config's variables values
 
 ifneq ($(filter $(_NAME),$(_SCT_TARGETS_NAMES)),)
 _HAS_ERROR = 1
