@@ -413,6 +413,17 @@ define _print_missing_variables
 			"$(err)";)
 endef
 
+# $1 : value of _GOAL
+define _print_goal_wrong_value
+	printf " %s[ INFO ]%s the value of GOAL must be specifying one protocol compilation\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   actual value: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(1)"
+	printf " %s[ INFO ]%s   possible values: \"EXECUTABLE\", \"LIB_STATIC\" or \"LIB_DYNAMIC\"\\n" \
+		"$(_CYAN)" "$(_END)"
+endef
+
 # $1 : value of the word
 # $2 : identifier of the word
 define _print_smtg_is_keyword
@@ -596,6 +607,7 @@ else #endif will end at end of load config.mk
 _DEBUG  ?= 0
 VERBOSE ?= 0
 
+_GOAL                 := $(strip $(GOAL))
 _NAME                 := $(strip $(NAME))
 _NAME_DEBUG           := $(strip $(NAME_DEBUG))
 _INC_FOLDER           := $(strip $(INC_FOLDER))
@@ -623,6 +635,11 @@ _LDLIBS     := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 _CFLAGS     := $(CFLAGS_COMMON) $(if $(filter 0, $(_DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
 
 ######### Check mistakes in config's variables values
+
+ifeq ($(filter $(_GOAL),EXECUTABLE LIB_STATIC LIB_DYNAMIC),)
+_HAS_ERROR = 1
+_HAS_ERROR_GOAL_WRONG_VALUE = 1
+endif
 
 ifneq ($(filter $(_NAME),$(_SCT_TARGETS_NAMES)),)
 _HAS_ERROR = 1
@@ -699,6 +716,9 @@ ifeq ($(_HAS_ERROR_UNAUTHORIZED_VARIABLES),1)
 endif
 ifeq ($(_HAS_ERROR_MISSING_VARIABLES),1)
 	@ $(call _print_missing_variables, $(_ERRORS_MISSING_VARIABLES))
+endif
+ifeq ($(_HAS_ERROR_GOAL_WRONG_VALUE),1)
+	@ $(call _print_goal_wrong_value,$(_GOAL))
 endif
 ifeq ($(_HAS_ERROR_NAME_IS_KEYWORD),1)
 	@ $(call _print_smtg_is_keyword,$(_NAME),NAME)
