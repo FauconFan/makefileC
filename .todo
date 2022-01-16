@@ -49,7 +49,7 @@ Core Features:
 		✔ Unauthorized variables are defined @done(21-11-27 12:28)
 		✔ Specified files are missing @done(21-11-27 12:28)
 		✔ Presence of unspecified files @done(21-11-27 12:28)
-		☐ Appropriate message if target not exists
+		☐ Appropriate message if target doesn't exist
 		✔ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition @done(22-01-05 17:31)
 		✔ Check if NAME and NAME_DEBUG are the same @done(22-01-05 17:35)
 		✔ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER @done(22-01-05 18:07)
@@ -73,3 +73,4 @@ Unprioritized:
 	☐ Look checkmake in case it becomes really interesting
 	☐ Good introduction to the power of Make: https://gist.github.com/isaacs/62a2d1825d04437c6f08
 	☐ Good practices: https://tech.davis-hansson.com/p/make/
+	☐ Read this and look for improvement: https://www.oreilly.com/library/view/managing-projects-with/0596006101/ch10.html
