@@ -13,7 +13,7 @@ fi
 
 # shellcheck disable=SC2046
 shellcheck -x $(find . -name "*.bash" -o -name "*.sh")
-test "$(find examples -mindepth 1 -maxdepth 1 | wc -l)" -eq 6
+test "$(find examples -mindepth 1 -maxdepth 1 | wc -l)" -eq 8
 
 for folder in 1-hello-world 2-sum10 3-fibonacci 4-fib-gcc 5-subdirs 6-debug 7-libmymath 8-libquotes
 do

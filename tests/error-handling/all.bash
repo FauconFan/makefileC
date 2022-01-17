@@ -7,7 +7,7 @@ if [ ! "$(git rev-parse --show-prefix)" = "tests/error-handling/mini-project2/" 
 	exit 1
 fi
 
-ALL_RULES="all clean fclean re debug redebug help self_update self_update_ignore"
+ALL_RULES="all clean fclean re debug redebug help self_update self_update_ignore install uninstall"
 EXCEPTED_RULES="init"
 
 ## Check that declared targets in the testsuite is the same than in the makefile
