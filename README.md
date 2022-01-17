@@ -97,6 +97,8 @@ Here is the list of targets:
   - make re                        Alias for "make fclean && make all"
   - make debug                     Same as "make all" except it uses debug flags
   - make redebug                   Alias for "make fclean && make debug"
+  - make install                   Installs the binary/library on the system
+  - make uninstall                 Uninstalls the binary/library from the system
   - make self_update               Self update from remote if new version is available
   - make self_update_ignore        Ignore self reminder for a short time
   - make init                      Initialize the project (at start only)

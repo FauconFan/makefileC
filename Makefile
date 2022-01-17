@@ -181,6 +181,8 @@ _SCT_TARGETS := \
 	re					$(call _merge_words,Alias for \"make fclean && make all\") \
 	debug				$(call _merge_words,Same as \"make all\" except it uses debug flags) \
 	redebug				$(call _merge_words,Alias for \"make fclean && make debug\") \
+	install				$(call _merge_words,Installs the binary/library on the system) \
+	uninstall			$(call _merge_words,Uninstalls the binary/library from the system) \
 	self_update			$(call _merge_words,Self update from remote if new version is available) \
 	self_update_ignore	$(call _merge_words,Ignore self reminder for a short time) \
 	init				$(call _merge_words,Initialize the project (at start only)) \
