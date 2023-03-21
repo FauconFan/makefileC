@@ -18,6 +18,8 @@ _SELF_URL_RELEASE    := https://raw.githubusercontent.com/FauconFan/$(_SELF_PROJ
 
 ######### Define termcap values if possible
 
+NO_COLORS	?= 0
+
 ifneq ($(NO_COLORS),1)
 
 _RED		:= $(shell tput setaf 1 2> /dev/null || echo -n "")
