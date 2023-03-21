@@ -16,7 +16,7 @@ Core Features:
 	✔ Document Configuration @done(21-12-08 21:11)
 	✔ `make help` @done(21-12-16 17:08)
 	✔ release @done(21-12-29 21:14)
-	☐ Self update (autocheck if new version) A good chunk of it have been done, but removed for stability (https://github.com/FauconFan/makefileC/commit/60141c3484229df4604b2df0149645e3625e3789)
+	☐ Self update (autocheck if new version) A good chunk of it have been done, but removed for stability (https://github.com/FauconFan/makefileC/commit/60141c3484229df4604b2df0149645e3625e3789 and https://github.com/FauconFan/makefileC/commit/478f158d7ebc2bfd7fa36c33940c53093e328ae4)
 	✔ Self init (able to setup hello-world with just makefile) @done(21-12-31 14:34)
 
 	Core Extended:
