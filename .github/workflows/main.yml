@@ -58,16 +58,6 @@ jobs:
         shell: bash
         working-directory: tests/error-handling/mini-project2
 
-  Self_Update:
-    runs-on: ubuntu-latest
-    needs: [ Check_Scripts ]
-    name: Self_Update on mini-project3
-    steps:
-      - uses: actions/checkout@v2
-      - run: ../all.bash
-        shell: bash
-        working-directory: tests/self-update/mini-project3
-
   Make_Init:
     runs-on: ubuntu-latest
     needs: [ Check_Scripts ]

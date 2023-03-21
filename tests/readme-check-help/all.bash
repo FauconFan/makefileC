@@ -9,8 +9,6 @@ fi
 
 TMPDIR="$(mktemp -d)"
 
-make self_update_ignore
-
 # Extract help without colors from Makefile
 make help NO_COLORS=1 > "${TMPDIR}/output_help.txt"
 
