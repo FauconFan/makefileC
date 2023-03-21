@@ -76,8 +76,8 @@ _file_defined_variables		= $(foreach V, $(sort $(.VARIABLES)), \
 #### $(1): The integer
 ####   example: $(call _inc_int, 2)
 ####   example: $(call _dec_int, 2)
-_inc_int			= $(shell echo $(1) + 1 | bc)
-_dec_int			= $(shell echo $(1) - 1 | bc)
+_inc_int			= $(shell echo $$(( $(1) + 1 )))
+_dec_int			= $(shell echo $$(( $(1) - 1 )))
 
 ### Functions that (un)merge a list of words together in order to make them like one
 #### $(1): The list of words to be merged
@@ -1006,8 +1006,10 @@ init:
 
 endif
 
-######### Manage printing variables for CI purposes (not documented in the API)
+######### Echo any variable
+### Useful for hierarichal projects or CI purposes
+### (not documented in the API)
 
-.PHONY: _printvar_%
-_printvar_%:
+.PHONY: _echovar_%
+_echovar_%:
 	@ echo $($*)

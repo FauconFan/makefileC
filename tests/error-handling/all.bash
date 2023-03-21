@@ -14,7 +14,7 @@ EXCEPTED_RULES="init"
 #### Don't want ALL_RULES to be automatically captured by the makefile
 cp correct_config.mk config.mk
 diff \
-	<(make _printvar__SCT_TARGETS_NAMES | tr ' ' '\n' | sort) \
+	<(make _echovar__SCT_TARGETS_NAMES | tr ' ' '\n' | sort) \
 	<(echo "${ALL_RULES}" "${EXCEPTED_RULES}" | tr ' ' '\n' | sort)
 rm -f config.mk
 
