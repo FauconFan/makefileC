@@ -4,7 +4,7 @@ jobs:
   Check_Scripts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: shellcheck -x $(find . -name "*.bash" -o -name "*.sh")
 
   # If the following test fails, it means the number of examples have changed
@@ -12,7 +12,7 @@ jobs:
   Compilation_Precheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: test "$(find examples -mindepth 1 -maxdepth 1 | wc -l)" -eq 8
 
   Compilation:
@@ -33,7 +33,7 @@ jobs:
         ]
     name: "Comp: On examples/${{ matrix.folder }}"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ../../tests/compilation/all.bash
         shell: bash
         working-directory: examples/${{ matrix.folder }}
@@ -43,7 +43,7 @@ jobs:
     needs: [ Check_Scripts ]
     name: Configuration on mini-project
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ../all.bash
         shell: bash
         working-directory: tests/configuration/mini-project
@@ -53,7 +53,7 @@ jobs:
     needs: [ Check_Scripts ]
     name: Error_Handling on mini-project2
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ../all.bash
         shell: bash
         working-directory: tests/error-handling/mini-project2
@@ -63,7 +63,7 @@ jobs:
     needs: [ Check_Scripts ]
     name: Testing `make init`
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ./tests/init/all.bash
         shell: bash
 
@@ -72,7 +72,7 @@ jobs:
     needs: [ Check_Scripts ]
     name: Readme Check Help on mini-project4
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ../all.bash
         shell: bash
         working-directory: tests/readme-check-help/mini-project4
