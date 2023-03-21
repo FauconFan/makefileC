@@ -18,6 +18,8 @@ _SELF_URL_RELEASE    := https://raw.githubusercontent.com/FauconFan/$(_SELF_PROJ
 
 ######### Define termcap values if possible
 
+ifneq ($(NO_COLORS),1)
+
 _RED		:= $(shell tput setaf 1 2> /dev/null || echo -n "")
 _GREEN		:= $(shell tput setaf 2 2> /dev/null || echo -n "")
 _YELLOW		:= $(shell tput setaf 3 2> /dev/null || echo -n "")
@@ -26,6 +28,19 @@ _PURPLE		:= $(shell tput setaf 5 2> /dev/null || echo -n "")
 _CYAN		:= $(shell tput setaf 6 2> /dev/null || echo -n "")
 _WHITE		:= $(shell tput setaf 7 2> /dev/null || echo -n "")
 _END		:= $(shell tput sgr0 2> /dev/null || echo -n "")
+
+else
+
+_RED		:= $(shell echo -n "")
+_GREEN		:= $(shell echo -n "")
+_YELLOW		:= $(shell echo -n "")
+_BLUE		:= $(shell echo -n "")
+_PURPLE		:= $(shell echo -n "")
+_CYAN		:= $(shell echo -n "")
+_WHITE		:= $(shell echo -n "")
+_END		:= $(shell echo -n "")
+
+endif
 
 ######### "Constants"
 
@@ -61,8 +76,8 @@ _file_defined_variables		= $(foreach V, $(sort $(.VARIABLES)), \
 #### $(1): The integer
 ####   example: $(call _inc_int, 2)
 ####   example: $(call _dec_int, 2)
-_inc_int			= $(shell echo $(1) + 1 | bc)
-_dec_int			= $(shell echo $(1) - 1 | bc)
+_inc_int			= $(shell echo $$(( $(1) + 1 )))
+_dec_int			= $(shell echo $$(( $(1) - 1 )))
 
 ### Functions that (un)merge a list of words together in order to make them like one
 #### $(1): The list of words to be merged
@@ -166,25 +181,24 @@ _SCT_TARGETS := \
 	re					$(call _merge_words,Alias for \"make fclean && make all\") \
 	debug				$(call _merge_words,Same as \"make all\" except it uses debug flags) \
 	redebug				$(call _merge_words,Alias for \"make fclean && make debug\") \
-	self_update			$(call _merge_words,Self update from remote if new version is available) \
-	self_update_ignore	$(call _merge_words,Ignore self reminder for a short time) \
+	install				$(call _merge_words,Installs the binary/library on the system) \
+	uninstall			$(call _merge_words,Uninstalls the binary/library from the system) \
 	init				$(call _merge_words,Initialize the project (at start only)) \
 	help				$(call _merge_words,Prints this message) \
 
 _SCT_TARGETS_NAMES      := $(call _select_mod,$(_SCT_TARGETS), 0, 2)
 _SCT_TARGETS_HELP       := $(call _select_mod,$(_SCT_TARGETS), 1, 2)
 
-_SCT_SELF_UPDATE_DESCRIPTION        := $(call _unmerge_words,$(strip $(call _select_on_mod,$(_SCT_TARGETS), 1, 2, 0, self_update)))
-_SCT_SELF_UPDATE_IGNORE_DESCRIPTION := $(call _unmerge_words,$(strip $(call _select_on_mod,$(_SCT_TARGETS), 1, 2, 0, self_update_ignore)))
-
 # Columns:
 #   name variable		isMandatory
 _SCT_VARIABLES := \
+	GOAL				TRUE \
 	NAME				TRUE \
 	NAME_DEBUG			TRUE \
 	INC_FOLDER			TRUE \
 	SRC_FOLDER			TRUE \
 	BUILD_FOLDER		TRUE \
+	HEADER_API			FALSE \
 	CC					FALSE \
 	CFLAGS_COMMON		FALSE \
 	CFLAGS_RELEASE		FALSE \
@@ -203,6 +217,9 @@ _SCT_VARIABLES_MANDATORY := $(call _select_on_mod,$(_SCT_VARIABLES), 0, 2, 1, TR
 ###############################################################################
 
 define _DEFAULT_CONFIG_MK_CONTENT
+
+# Goal Mode
+GOAL = EXECUTABLE
 
 # Name of the binary
 NAME = output
@@ -230,8 +247,8 @@ LDLIBS =
 
 # Exhaustive list of the source files (base dir is $$(SRC_FOLDER))
 # All your source code files must be in $$(SRC_FOLDER)
-SRC = $\\
-	main.c $\\
+SRC = $(shell echo \)
+	main.c $(shell echo \)
 
 endef
 
@@ -273,10 +290,33 @@ define _print_help
 			"" "-" \
 			"$(_CYAN)" "@target" "$(_END)" \
 			"@description";)
+	printf "\\n"
+	printf "  You can also provide two extra variables:\\n"
+	printf "  - VERBOSE (default: 0):\\n"
+	printf "      If enabled, meaningful commands are printed.\\n"
+	printf "      A non-meaningful command is a print command, create directories, etc.\\n"
+	printf "        ex: \`make %sre%s VERBOSE=1\`\\n" "$(_CYAN)" "$(_END)"
+	printf "  - NO_COLORS (default: 0):\\n"
+	printf "      If enabled, no colors will be printed\\n"
+	printf "        ex: \`make %shelp%s NO_COLORS=1\`\\n" "$(_CYAN)" "$(_END)"
 endef
 
-define _print_name
-	printf " %s[ INFO ]%s %sAssemble%s     %s\`%s\`%s  %-s\\n" \
+define _print_executable
+	printf " %s[ INFO ]%s %sAssemble (executable)%s         %s\`%s\`%s  %-s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_GREEN)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
+endef
+
+define _print_libstatic
+	printf " %s[ INFO ]%s %sAssemble (static library)%s     %s\`%s\`%s  %-s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_GREEN)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
+endef
+
+define _print_libdynamic
+	printf " %s[ INFO ]%s %sAssemble (dynamic library)%s    %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
 		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
@@ -299,38 +339,26 @@ define _print_init
 		"$(_GREEN)" "$(_END)"
 endef
 
-define _print_progress # 1:name of file to compile as argument
+# $1 : name of file to compile as argument
+define _print_progress
 	printf " %s[%2s/%2s]%s  %sCompile%s      %-55s\\n" \
 		"$(_CYAN)" "$(_NB_ACTU)" "$(_NB_TO_COMP)" "$(_END)" \
 		"$(_GREEN)" "$(_END)" \
 		"\`$(strip $(1))\`"
 endef
 
-define _print_can_update
-	printf " %s[ UPDATE ]%s %sA new version of $(_SELF_PROJECT_NAME) is available%s\\n" \
+define _print_install
+	printf " %s[ INFO ]%s %sInstall%s      %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-	printf " %s[ UPDATE ]%s   %sYou can either:%s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-	printf " %s[ UPDATE ]%s     %s- \`make self_update\`: $(_SCT_SELF_UPDATE_DESCRIPTION)%s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-	printf " %s[ UPDATE ]%s     %s- \`make self_update_ignore\`: $(_SCT_SELF_UPDATE_IGNORE_DESCRIPTION)%s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
+		"$(_GREEN)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
 endef
 
-define _print_self_update
-	printf " %s[ INFO ]%s %sUpdate%s       $(_SELF_REALPATH) has been updated\\n" \
+define _print_uninstall
+	printf " %s[ INFO ]%s %sUninstall%s    %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-endef
-
-define _print_self_update_ignore
-	printf " %s[ INFO ]%s %sIgnore%s       reminder has been muted\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
+		"$(_RED)" "$(_END)" \
+		"$(_YELLOW)" "$(_NAME_TARGET)" "$(_END)" ""
 endef
 
 define _print_clean_build_dir
@@ -339,7 +367,8 @@ define _print_clean_build_dir
 		"$(_RED)" "$(_END)"
 endef
 
-define _print_clean_bin # 1: name of the file that was removed
+# $1 : name of the file that was removed
+define _print_clean_bin
 	printf " %s[ INFO ]%s %sRemove%s       %s\`%s\`%s\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_RED)" "$(_END)" \
@@ -362,23 +391,93 @@ define _print_missing_config_mk
 	printf " %s[ INFO ]%s \`%s\` is missing\\n" \
 		"$(_CYAN)" "$(_END)" \
 		"$(_CONFIG_FILE)"
+	printf " %s[ INFO ]%s if your folder is empty, you may use \`make %sinit%s\` to initialize a minimal project\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CYAN)" "$(_END)"
 endef
 
-define _print_unauthorized_variables # 1:list of unauthorized variables
+# $1 : list of unauthorized variables
+define _print_unauthorized_variables
 	$(foreach err,$(1), \
 		printf " %s[ INFO ]%s Cannot define variable: %s\\n" \
 			"$(_CYAN)" "$(_END)" \
 			"$(err)";)
 endef
 
-define _print_missing_variables # 1:list of missing variables
+# $1 : list of missing variables
+define _print_missing_variables
 	$(foreach err,$(1), \
 		printf " %s[ INFO ]%s Variable not defined: %s\\n" \
 			"$(_CYAN)" "$(_END)" \
 			"$(err)";)
 endef
 
-define _print_missing_files # 1:list of files in spec but no exist, 2:list of files that exist but not in spec
+# $1 : value of _GOAL
+define _print_goal_wrong_value
+	printf " %s[ INFO ]%s the value of GOAL must be specifying one protocol compilation\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   actual value: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(1)"
+	printf " %s[ INFO ]%s   possible values: \"EXECUTABLE\", \"LIB_STATIC\" or \"LIB_DYNAMIC\"\\n" \
+		"$(_CYAN)" "$(_END)"
+endef
+
+# $1 : value of the word
+# $2 : identifier of the word
+define _print_smtg_is_keyword
+	printf " %s[ INFO ]%s the value of %s is a keyword of the Makefile\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(2)"
+	printf " %s[ INFO ]%s   actual value: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(1)"
+	printf " %s[ INFO ]%s   forbidden values: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_SCT_TARGETS_NAMES)"
+endef
+
+define _print_name_equals_name_debug
+	printf " %s[ INFO ]%s the value of NAME is the same as the value of NAME_DEBUG\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   actual value of NAME: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_NAME)"
+	printf " %s[ INFO ]%s   actual value of NAME_DEBUG: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_NAME_DEBUG)"
+endef
+
+# $1 : value of the word
+# $2 : identifier of the word
+define _print_builddir_same_as_smtg
+	printf " %s[ INFO ]%s the value of %s is the same as BUILD_FOLDER\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(2)"
+	printf " %s[ INFO ]%s   actual value: %s\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(1)"
+endef
+
+define _print_header_api_not_needed_but_present
+	printf " %s[ INFO ]%s When goal is \"EXECUTABLE\", you cannot specify HEADER_API variable.\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   Please remove it from %s.\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)"
+endef
+
+define _print_header_api_needed_but_not_present
+	printf " %s[ INFO ]%s When goal is \"LIB_*\", you have to specify HEADER_API variable.\\n" \
+		"$(_CYAN)" "$(_END)"
+	printf " %s[ INFO ]%s   Please fill the variable with the path of a standalone header in %s.\\n" \
+		"$(_CYAN)" "$(_END)" \
+		"$(_CONFIG_FILE)"
+endef
+
+# $1 : list of files in spec but no exist
+# $2 : list of files that exist but not in spec
+define _print_unauthorized_files
 	$(foreach file, $(1), \
 		printf " %s[ INFO ]%s This file is in the config file (\`%s\`) but doesn't exist: %s\\n" \
 			"$(_CYAN)" "$(_END)" \
@@ -401,82 +500,23 @@ endef
 
 ###############################################################################
 #########                                                            ##########
-#########                         SELF UPDATE                        ##########
-#########                                                            ##########
-###############################################################################
-
-_SELF_LOCAL_DIR         := ~/.$(_SELF_PROJECT_NAME)
-_SELF_LATEST_MAKEFILE   := $(_SELF_LOCAL_DIR)/latest.mk
-_SELF_IGNORE_FILE       := $(_SELF_LOCAL_DIR)/ignore
-_SELF_REFRESH_CHECK     := 1 day
-
-_SELF_NEED_DOWNLOAD     := 0
-_SELF_CAN_UPDATE        := 0
-
-_IGNORE_SELF_UPDATE     ?= 0
-
-_SELF_REALPATH          := $(shell realpath $(lastword $(MAKEFILE_LIST)))
-
-_SELF_CMD_IGNORE_UPDATE := touch $(_SELF_IGNORE_FILE)
-_SELF_CMD_UPDATE        := cp $(_SELF_LATEST_MAKEFILE) $(_SELF_REALPATH)
-
-######### Create local dir if not exists
-
-ifeq ($(wildcard $(_SELF_LOCAL_DIR)),)
-$(shell mkdir $(_SELF_LOCAL_DIR))
-endif
-
-ifeq ($(wildcard $(_SELF_IGNORE_FILE)),)
-$(shell touch -t $(shell date -d "$(_SELF_REFRESH_CHECK) ago" "+%Y%m%d%H%M.%S") $(_SELF_IGNORE_FILE))
-endif
-
-######### Check if download the makefile from GitHub is necessary
-
-ifeq ($(wildcard $(_SELF_LATEST_MAKEFILE)),)
-_SELF_NEED_DOWNLOAD = 1
-else
-
-ifeq ($(shell test "$(shell stat --format=%Y $(_SELF_LATEST_MAKEFILE))" -gt \
-	"$(shell date -d "$(_SELF_REFRESH_CHECK) ago" +%s)" || echo 1),1)
-_SELF_NEED_DOWNLOAD = 1
-endif
-
-endif
-
-######### Downloading
-
-ifeq ($(_SELF_NEED_DOWNLOAD),1)
-$(shell curl -s -o $(_SELF_LATEST_MAKEFILE) $(_SELF_URL_RELEASE))
-endif
-
-######### Checking if you can update
-
-ifneq ($(shell diff $(_SELF_REALPATH) $(_SELF_LATEST_MAKEFILE)),)
-_SELF_CAN_UPDATE = 1
-endif
-
-######### Ignore self update if specified
-
-ifeq ($(shell test "$(shell stat --format=%Y $(_SELF_IGNORE_FILE))" -lt \
-	"$(shell date -d "$(_SELF_REFRESH_CHECK) ago" +%s)" || echo 1),1)
-_SELF_CAN_UPDATE = 0
-endif
-
-ifeq ($(_IGNORE_SELF_UPDATE),1)
-_SELF_CAN_UPDATE = 0
-endif
-
-###############################################################################
-#########                                                            ##########
 #########                      LOAD `config.mk`                      ##########
 #########                                                            ##########
 ###############################################################################
 
-_HAS_ERROR                               := 0
-_HAS_ERROR_MISSING_CONFIG_FILE           := 0
-_HAS_ERROR_UNAUTHORIZED_VARIABLES        := 0
-_HAS_ERROR_MISSING_VARIABLES             := 0
-_HAS_ERROR_UNCONSISTENT_FILES            := 0
+_HAS_ERROR                                       := 0
+_HAS_ERROR_MISSING_CONFIG_FILE                   := 0
+_HAS_ERROR_UNAUTHORIZED_VARIABLES                := 0
+_HAS_ERROR_MISSING_VARIABLES                     := 0
+_HAS_ERROR_GOAL_WRONG_VALUE                      := 0
+_HAS_ERROR_NAME_IS_KEYWORD                       := 0
+_HAS_ERROR_NAME_DEBUG_IS_KEYWORD                 := 0
+_HAS_ERROR_NAME_EQUALS_NAME_DEBUG                := 0
+_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR               := 0
+_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR               := 0
+_HAS_ERROR_HEADER_API_NOT_NEEDED_BUT_PRESENT     := 0
+_HAS_ERROR_HEADER_API_NEEDED_BUT_NOT_PRESENT     := 0
+_HAS_ERROR_UNCONSISTENT_FILES                    := 0
 
 _CONFIG_FILE := ./config.mk
 
@@ -517,6 +557,7 @@ else #endif will end at end of load config.mk
 _DEBUG  ?= 0
 VERBOSE ?= 0
 
+_GOAL                 := $(strip $(GOAL))
 _NAME                 := $(strip $(NAME))
 _NAME_DEBUG           := $(strip $(NAME_DEBUG))
 _INC_FOLDER           := $(strip $(INC_FOLDER))
@@ -536,12 +577,60 @@ CFLAGS_DEBUG   ?= -O0 -DDEBUG -ggdb
 
 CFLAGS_COMMON  += -MMD
 
+ifeq ($(_GOAL),LIB_DYNAMIC)
+CFLAGS_COMMON  += -fPIC
+endif
+
 _CC         := $(if $(filter-out $(origin CC),default),$(CC),clang)
 _IFLAGS     := -I $(_INC_FOLDER)
 _LDFLAGS    := $(if $(filter-out $(origin LDFLAGS),default),$(LDFLAGS),)
 _LDLIBS     := $(if $(filter-out $(origin LDLIBS),default),$(LDLIBS),)
 
 _CFLAGS     := $(CFLAGS_COMMON) $(if $(filter 0, $(_DEBUG)), $(CFLAGS_RELEASE), $(CFLAGS_DEBUG))
+
+######### Check mistakes in config's variables values
+
+ifeq ($(filter $(_GOAL),EXECUTABLE LIB_STATIC LIB_DYNAMIC),)
+_HAS_ERROR = 1
+_HAS_ERROR_GOAL_WRONG_VALUE = 1
+endif
+
+ifneq ($(filter $(_NAME),$(_SCT_TARGETS_NAMES)),)
+_HAS_ERROR = 1
+_HAS_ERROR_NAME_IS_KEYWORD = 1
+endif
+
+ifneq ($(filter $(_NAME_DEBUG),$(_SCT_TARGETS_NAMES)),)
+_HAS_ERROR = 1
+_HAS_ERROR_NAME_DEBUG_IS_KEYWORD = 1
+endif
+
+ifeq ($(_NAME),$(_NAME_DEBUG))
+_HAS_ERROR = 1
+_HAS_ERROR_NAME_EQUALS_NAME_DEBUG = 1
+endif
+
+ifeq ($(_BUILD_FOLDER),$(_SRC_FOLDER))
+_HAS_ERROR = 1
+_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR = 1
+endif
+
+ifeq ($(_BUILD_FOLDER),$(_INC_FOLDER))
+_HAS_ERROR = 1
+_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR = 1
+endif
+
+ifeq ($(_GOAL),EXECUTABLE)
+ifdef HEADER_API
+_HAS_ERROR = 1
+_HAS_ERROR_HEADER_API_NOT_NEEDED_BUT_PRESENT = 1
+endif
+else
+ifndef HEADER_API
+_HAS_ERROR = 1
+_HAS_ERROR_HEADER_API_NEEDED_BUT_NOT_PRESENT = 1
+endif
+endif
 
 ######### Generating variables for files
 
@@ -594,8 +683,32 @@ endif
 ifeq ($(_HAS_ERROR_MISSING_VARIABLES),1)
 	@ $(call _print_missing_variables, $(_ERRORS_MISSING_VARIABLES))
 endif
+ifeq ($(_HAS_ERROR_GOAL_WRONG_VALUE),1)
+	@ $(call _print_goal_wrong_value,$(_GOAL))
+endif
+ifeq ($(_HAS_ERROR_NAME_IS_KEYWORD),1)
+	@ $(call _print_smtg_is_keyword,$(_NAME),NAME)
+endif
+ifeq ($(_HAS_ERROR_NAME_DEBUG_IS_KEYWORD),1)
+	@ $(call _print_smtg_is_keyword,$(_NAME_DEBUG),NAME_DEBUG)
+endif
+ifeq ($(_HAS_ERROR_NAME_EQUALS_NAME_DEBUG),1)
+	@ $(call _print_name_equals_name_debug)
+endif
+ifeq ($(_HAS_ERROR_BUILDDIR_SAME_AS_SRCDIR),1)
+	@ $(call _print_builddir_same_as_smtg,$(_SRC_FOLDER),SRC_FOLDER)
+endif
+ifeq ($(_HAS_ERROR_BUILDDIR_SAME_AS_INCDIR),1)
+	@ $(call _print_builddir_same_as_smtg,$(_INC_FOLDER),INC_FOLDER)
+endif
+ifeq ($(_HAS_ERROR_HEADER_API_NOT_NEEDED_BUT_PRESENT),1)
+	@ $(call _print_header_api_not_needed_but_present)
+endif
+ifeq ($(_HAS_ERROR_HEADER_API_NEEDED_BUT_NOT_PRESENT),1)
+	@ $(call _print_header_api_needed_but_not_present)
+endif
 ifeq ($(_HAS_ERROR_UNCONSISTENT_FILES),1)
-	@ $(call _print_missing_files, $(_ERRORS_SRC_SPEC_NO_EXISTS), $(_ERRORS_SRC_EXISTS_NO_SPEC))
+	@ $(call _print_unauthorized_files, $(_ERRORS_SRC_SPEC_NO_EXISTS), $(_ERRORS_SRC_EXISTS_NO_SPEC))
 endif
 	@ $(call _print_end_error_reporting)
 	@ false
@@ -631,16 +744,27 @@ endif
 
 ######### Core rules
 
-.PHONY: default
+.PHONY: defaultAR
 default: all
 
 .PHONY: all
-all: _show_self_update $(_NAME_TARGET)
+all: $(_NAME_TARGET)
 
 $(_NAME_TARGET): _precomp $(_OBJ)
 	@ ! test "$(_NB_TO_COMP)" -eq 0 || $(call _print_nothing_to_relink)
+ifeq ($(_GOAL),EXECUTABLE)
 	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(_CC) $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
-	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_name)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_executable)
+endif
+ifeq ($(_GOAL),LIB_STATIC)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(AR) rc $@ $(_OBJ))
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, ranlib $@)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_libstatic)
+endif
+ifeq ($(_GOAL),LIB_DYNAMIC)
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call cmd, $(_CC) -shared $(_CFLAGS) $(_IFLAGS) $(_LDFLAGS) -o $@ $(_OBJ) $(_LDLIBS))
+	@ ! test "$(_NB_TO_COMP)" -ne 0 || $(call _print_libdynamic)
+endif
 
 ifdef _COUNT_OBJS
 
@@ -666,7 +790,7 @@ endif
 .PHONY: _precomp
 _precomp:
 	@ $(eval _NB_TO_COMP := \
-		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) _IGNORE_SELF_UPDATE=1 $(_OBJ) | grep +1 | wc -l))
+		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) $(_OBJ) | grep +1 | wc -l))
 	@ $(eval _NB_TO_COMP := \
 		$(shell echo $$(( $(_NB_TO_COMP) + \
 			0$(shell test "$(_NB_TO_COMP)" -eq 0 -a ! -f "$(_NAME_TARGET)" && echo 1) \
@@ -688,59 +812,63 @@ _fclean_binaries:
 	@ ! test -f "$(_NAME_DEBUG)" || $(call cmd, rm -f $(_NAME_DEBUG))
 
 .PHONY: clean
-clean: _show_self_update _clean_build_dir
+clean: _clean_build_dir
 	@ $(call _print_end_clean)
 
 .PHONY: fclean
-fclean: _show_self_update _clean_build_dir _fclean_binaries
+fclean: _clean_build_dir _fclean_binaries
 	@ $(call _print_end_fclean)
 
 .PHONY: re
 re: fclean all
 
+######### Install / Uninstall
+
+DESTDIR ?=
+PREFIX ?= /usr/local
+
+.PHONY: install
+install: fclean $(_NAME_TARGET)
+ifeq ($(_GOAL),EXECUTABLE)
+	@ $(call cmd, mkdir -p $(DESTDIR)$(PREFIX)/bin)
+	@ $(call cmd, cp $(_NAME_TARGET) $(DESTDIR)$(PREFIX)/bin/$(_NAME_TARGET))
+else
+	@ $(call cmd, mkdir -p $(DESTDIR)$(PREFIX)/lib)
+	@ $(call cmd, mkdir -p $(DESTDIR)$(PREFIX)/include)
+	@ $(call cmd, cp $(_NAME_TARGET) $(DESTDIR)$(PREFIX)/lib/$(_NAME_TARGET))
+	@ $(call cmd, cp $(_INC_FOLDER)$(HEADER_API) $(DESTDIR)$(PREFIX)/include/$(HEADER_API))
+endif
+	@ $(call _print_install)
+
+.PHONY: uninstall
+uninstall:
+ifeq ($(_GOAL),EXECUTABLE)
+	@ $(call cmd, rm -f $(DESTDIR)$(PREFIX)/bin/$(_NAME_TARGET))
+else
+	@ $(call cmd, rm -f $(DESTDIR)$(PREFIX)/lib/$(_NAME_TARGET))
+	@ $(call cmd, rm -f $(DESTDIR)$(PREFIX)/include/$(HEADER_API))
+endif
+	@ $(call _print_uninstall)
+
 ######### Manage debug
 
 .PHONY: debug
-debug: _show_self_update
-	@ $(MAKE) --no-print-directory _DEBUG=1 _IGNORE_SELF_UPDATE=1 all
+debug:
+	@ $(MAKE) --no-print-directory _DEBUG=1 all
 
 ifeq ($(_DEBUG),0)
 $(_NAME_DEBUG): debug
 endif
 
 .PHONY: redebug
-redebug: _show_self_update
-	@ $(MAKE) --no-print-directory _DEBUG=1 _IGNORE_SELF_UPDATE=1 re
+redebug:
+	@ $(MAKE) --no-print-directory _DEBUG=1 re
 
 ######### Manage help
 
 .PHONY: help
-help: _show_self_update
+help:
 	@ $(call _print_help)
-
-######### Manage self update
-
-.PHONY: _show_self_update
-_show_self_update:
-ifeq ($(_SELF_CAN_UPDATE),1)
-	@ $(call _print_can_update)
-endif
-
-.PHONY: self_update_ignore
-self_update_ignore:
-	@ $(call _print_self_update_ignore)
-	@ $(_SELF_CMD_IGNORE_UPDATE)
-
-.PHONY: self_update
-self_update:
-	@ $(call _print_self_update)
-	@ $(_SELF_CMD_UPDATE)
-
-######### Manage printing variables for CI purposes (not documented in the API)
-
-.PHONY: _printvar_%
-_printvar_%:
-	@ echo $($*)
 
 endif #endif of error reporting
 
@@ -760,3 +888,11 @@ init:
 	@ mv main.h inc/
 
 endif
+
+######### Echo any variable
+### Useful for hierarichal projects or CI purposes
+### (not documented in the API)
+
+.PHONY: _echovar_%
+_echovar_%:
+	@ echo $($*)

@@ -16,13 +16,13 @@ Core Features:
 	✔ Document Configuration @done(21-12-08 21:11)
 	✔ `make help` @done(21-12-16 17:08)
 	✔ release @done(21-12-29 21:14)
-	✔ Self update (autocheck if new version) @done(21-12-29 21:14)
+	☐ Self update (autocheck if new version) A good chunk of it have been done, but removed for stability (https://github.com/FauconFan/makefileC/commit/60141c3484229df4604b2df0149645e3625e3789)
 	✔ Self init (able to setup hello-world with just makefile) @done(21-12-31 14:34)
 
 	Core Extended:
-		☐ Declare what goal is (binary, library static/dynamic)
+		✔ Declare what goal is (binary, library static/dynamic) @done(22-01-16 20:39)
 		☐ Subprojects (call and indentation)
-		☐ Install/Uninstall rule
+		✔ Install/Uninstall rule @done(22-01-16 20:39)
 
 	Core with CPP:
 		☐ Support cpp
@@ -30,13 +30,17 @@ Core Features:
 
 	Tests:
 		✔ Test each utility through a pipeline @done(21-12-12 13:52)
-		☐ Test default rule (no target)
-		☐ Test for error-handling if the output is the same, whatever the target
+		✔ Test default rule (no target) @done(21-12-31 16:36)
+		✔ Test for error-handling if the output is the same, whatever the target @done(21-12-31 16:58)
+		☐ Test all new errors introduced by handling libraries, install and subprojects
 		☐ Test multithread (How ?)
 		☐ Test progress status (How ?)
-		☐ test different values of TERM (How ?)
-		☐ make help compared with README.md
+		☐ Test different values of TERM (How ?) and NO_COLORS variable
+		☐ Test whether undefined variable is printed by Makefile
+		✔ make help compared with README.md @done(22-01-15 15:13)
+		☐ Test whether dependencies are took into account (*.d)
 		☐ Design a benchmark suite compared to a minimal Makefile with no fancy stuff
+		☐ Test the validity of this makefile in various distributions platforms (using Docker)
 
 	Examples:
 		☐ Implement a small utility to copy files and directories with GUI
@@ -48,14 +52,16 @@ Core Features:
 		✔ Unauthorized variables are defined @done(21-11-27 12:28)
 		✔ Specified files are missing @done(21-11-27 12:28)
 		✔ Presence of unspecified files @done(21-11-27 12:28)
-		☐ Check prerequisites of the makefile (shell calls)
-		✘ Verify that minimal folders exists (no need) @cancelled(21-12-12 17:57)
-		☐ Check if variables are being redefined in config file (check if valuable)
-		☐ Appropriate message if target not exists
-		☐ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition
-		☐ Check if NAME and NAME_DEBUG are the same
-		☐ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER
+		☐ Appropriate message if target doesn't exist
+		✔ Check if NAME or NAME_DEBUG is a keyword in the Makefile definition @done(22-01-05 17:31)
+		✔ Check if NAME and NAME_DEBUG are the same @done(22-01-05 17:35)
+		✔ Check if BUILD_FOLDER is different from SRC_FOLDER and INC_FOLDER @done(22-01-05 18:07)
 		☐ Check content of actual folder when doing make init
+		☐ Check if user has rights to rights on directory
+		Check if valuable:
+			☐ Check if variables are being redefined in config file
+			☐ Check prerequisites of the makefile (shell calls)
+			☐ Check if naming conventions for libraries is respected
 
 	Lint, unit tests and black boxes:
 		☐ Create a dockerfile that is easily changeable, upon configuration
@@ -70,4 +76,8 @@ Core Features:
 Unprioritized:
 	☐ Support Windows and MacOS
 	☐ Look checkmake in case it becomes really interesting
+	☐ Good introduction to the power of Make: https://gist.github.com/isaacs/62a2d1825d04437c6f08
 	☐ Good practices: https://tech.davis-hansson.com/p/make/
+	☐ Read this and look for improvement: https://www.oreilly.com/library/view/managing-projects-with/0596006101/ch10.html
+	☐ Best article found so far: http://nuclear.mutantstargoat.com/articles/make/
+	☐ Install dynamic libraries: https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html

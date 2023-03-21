@@ -15,6 +15,8 @@ saveConfig() {
 
 	cat > config.mk << EOF
 
+GOAL = ${CONFIG[goal]:-EXECUTABLE}
+
 NAME = ${CONFIG[output]:-output}
 NAME_DEBUG = ${CONFIG[output-debug]:-output-debug}
 

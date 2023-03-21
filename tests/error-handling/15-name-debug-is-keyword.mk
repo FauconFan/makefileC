@@ -2,7 +2,7 @@
 GOAL = EXECUTABLE
 
 NAME = output
-NAME_DEBUG = output-debug
+NAME_DEBUG = help
 
 SRC_FOLDER = src/
 INC_FOLDER = inc/
@@ -15,4 +15,6 @@ CFLAGS_DEBUG = -O0 -ggdb -DDEBUG
 LDFLAGS =
 LDLIBS =
 
-SRC = main.c
+SRC = \
+	main.c \
+	print_mini_project.c \

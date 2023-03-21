@@ -1,10 +1,10 @@
 
 # Goal Mode
-GOAL = EXECUTABLE
+GOAL = LIB_STATIC
 
 # Name of the binary
-NAME = output
-NAME_DEBUG = output-debug
+NAME = libmymath.a
+NAME_DEBUG = libmymath-debug.a
 
 # Folder constants
 ## folder that contains the headers files [.h]
@@ -26,12 +26,10 @@ LDFLAGS =
 ## Libs Flags
 LDLIBS =
 
+HEADER_API = mymath.h
+
 # Exhaustive list of the source files (base dir is $(SRC_FOLDER))
 # All your source code files must be in $(SRC_FOLDER)
 SRC = \
-	main.c \
-	a/get1.c \
-	a/b/get2.c \
-	a/c/get3.c \
-	a/d/e/get4.c \
-	a/c/f/get5.c
+	fact.c \
+	mypow.c \

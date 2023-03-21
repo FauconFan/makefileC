@@ -1,4 +1,6 @@
 
+# GOAL = EXECUTABLE
+
 # NAME = output
 # NAME_DEBUG = output-debug
 

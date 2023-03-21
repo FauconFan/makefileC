@@ -6,7 +6,7 @@ NAME_DEBUG = output-debug
 
 SRC_FOLDER = src/
 INC_FOLDER = inc/
-BUILD_FOLDER = build/
+BUILD_FOLDER = src/
 
 CC = clang
 CFLAGS_COMMON = -Wall -Wextra -Werror -Weverything -pedantic -std=c17
@@ -15,4 +15,6 @@ CFLAGS_DEBUG = -O0 -ggdb -DDEBUG
 LDFLAGS =
 LDLIBS =
 
-SRC = main.c
+SRC = \
+	main.c \
+	print_mini_project.c \

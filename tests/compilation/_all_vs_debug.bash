@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ ! "${GOAL_MODE}" = "EXECUTABLE" ]; then
+	return 0
+fi
+
 make all
 eval "${NAME}" > /tmp/release_output # register release output for later
 make clean

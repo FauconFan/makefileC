@@ -1,4 +1,6 @@
 
+GOAL = EXECUTABLE
+
 NAME = hello-world
 NAME_DEBUG = hello-world-debug
 
