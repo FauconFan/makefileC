@@ -16,7 +16,7 @@ Core Features:
 	✔ Document Configuration @done(21-12-08 21:11)
 	✔ `make help` @done(21-12-16 17:08)
 	✔ release @done(21-12-29 21:14)
-	✔ Self update (autocheck if new version) @done(21-12-29 21:14)
+	☐ Self update (autocheck if new version)
 	✔ Self init (able to setup hello-world with just makefile) @done(21-12-31 14:34)
 
 	Core Extended:

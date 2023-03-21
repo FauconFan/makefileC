@@ -183,16 +183,11 @@ _SCT_TARGETS := \
 	redebug				$(call _merge_words,Alias for \"make fclean && make debug\") \
 	install				$(call _merge_words,Installs the binary/library on the system) \
 	uninstall			$(call _merge_words,Uninstalls the binary/library from the system) \
-	self_update			$(call _merge_words,Self update from remote if new version is available) \
-	self_update_ignore	$(call _merge_words,Ignore self reminder for a short time) \
 	init				$(call _merge_words,Initialize the project (at start only)) \
 	help				$(call _merge_words,Prints this message) \
 
 _SCT_TARGETS_NAMES      := $(call _select_mod,$(_SCT_TARGETS), 0, 2)
 _SCT_TARGETS_HELP       := $(call _select_mod,$(_SCT_TARGETS), 1, 2)
-
-_SCT_SELF_UPDATE_DESCRIPTION        := $(call _unmerge_words,$(strip $(call _select_on_mod,$(_SCT_TARGETS), 1, 2, 0, self_update)))
-_SCT_SELF_UPDATE_IGNORE_DESCRIPTION := $(call _unmerge_words,$(strip $(call _select_on_mod,$(_SCT_TARGETS), 1, 2, 0, self_update_ignore)))
 
 # Columns:
 #   name variable		isMandatory
@@ -352,33 +347,6 @@ define _print_progress
 		"\`$(strip $(1))\`"
 endef
 
-define _print_can_update
-	printf " %s[ UPDATE ]%s %sA new version of $(_SELF_PROJECT_NAME) is available%s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-	printf " %s[ UPDATE ]%s   %sYou can either:%s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-	printf " %s[ UPDATE ]%s     %s- \`make self_update\`: $(_SCT_SELF_UPDATE_DESCRIPTION)%s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-	printf " %s[ UPDATE ]%s     %s- \`make self_update_ignore\`: $(_SCT_SELF_UPDATE_IGNORE_DESCRIPTION)%s\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-endef
-
-define _print_self_update
-	printf " %s[ INFO ]%s %sUpdate%s       $(_SELF_REALPATH) has been updated\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-endef
-
-define _print_self_update_ignore
-	printf " %s[ INFO ]%s %sIgnore%s       reminder has been muted\\n" \
-		"$(_CYAN)" "$(_END)" \
-		"$(_PURPLE)" "$(_END)"
-endef
-
 define _print_install
 	printf " %s[ INFO ]%s %sInstall%s      %s\`%s\`%s  %-s\\n" \
 		"$(_CYAN)" "$(_END)" \
@@ -529,73 +497,6 @@ define _print_end_error_reporting
 	printf " %s[ INFO ]%s aborting\\n" \
 		"$(_CYAN)" "$(_END)"
 endef
-
-###############################################################################
-#########                                                            ##########
-#########                         SELF UPDATE                        ##########
-#########                                                            ##########
-###############################################################################
-
-_SELF_LOCAL_DIR         := ~/.$(_SELF_PROJECT_NAME)
-_SELF_LATEST_MAKEFILE   := $(_SELF_LOCAL_DIR)/latest.mk
-_SELF_IGNORE_FILE       := $(_SELF_LOCAL_DIR)/ignore
-_SELF_REFRESH_CHECK     := 1 day
-
-_SELF_NEED_DOWNLOAD     := 0
-_SELF_CAN_UPDATE        := 0
-
-_IGNORE_SELF_UPDATE     ?= 0
-
-_SELF_REALPATH          := $(shell realpath $(lastword $(MAKEFILE_LIST)))
-
-_SELF_CMD_IGNORE_UPDATE := touch $(_SELF_IGNORE_FILE)
-_SELF_CMD_UPDATE        := cp $(_SELF_LATEST_MAKEFILE) $(_SELF_REALPATH)
-
-######### Create local dir if not exists
-
-ifeq ($(wildcard $(_SELF_LOCAL_DIR)),)
-$(shell mkdir $(_SELF_LOCAL_DIR))
-endif
-
-ifeq ($(wildcard $(_SELF_IGNORE_FILE)),)
-$(shell touch -t $(shell date -d "$(_SELF_REFRESH_CHECK) ago" "+%Y%m%d%H%M.%S") $(_SELF_IGNORE_FILE))
-endif
-
-######### Check if download the makefile from GitHub is necessary
-
-ifeq ($(wildcard $(_SELF_LATEST_MAKEFILE)),)
-_SELF_NEED_DOWNLOAD = 1
-else
-
-ifeq ($(shell test "$(shell stat --format=%Y $(_SELF_LATEST_MAKEFILE))" -gt \
-	"$(shell date -d "$(_SELF_REFRESH_CHECK) ago" +%s)" || echo 1),1)
-_SELF_NEED_DOWNLOAD = 1
-endif
-
-endif
-
-######### Downloading
-
-ifeq ($(_SELF_NEED_DOWNLOAD),1)
-$(shell curl -s -o $(_SELF_LATEST_MAKEFILE) $(_SELF_URL_RELEASE))
-endif
-
-######### Checking if you can update
-
-ifneq ($(shell diff $(_SELF_REALPATH) $(_SELF_LATEST_MAKEFILE)),)
-_SELF_CAN_UPDATE = 1
-endif
-
-######### Ignore self update if specified
-
-ifeq ($(shell test "$(shell stat --format=%Y $(_SELF_IGNORE_FILE))" -lt \
-	"$(shell date -d "$(_SELF_REFRESH_CHECK) ago" +%s)" || echo 1),1)
-_SELF_CAN_UPDATE = 0
-endif
-
-ifeq ($(_IGNORE_SELF_UPDATE),1)
-_SELF_CAN_UPDATE = 0
-endif
 
 ###############################################################################
 #########                                                            ##########
@@ -847,7 +748,7 @@ endif
 default: all
 
 .PHONY: all
-all: _show_self_update $(_NAME_TARGET)
+all: $(_NAME_TARGET)
 
 $(_NAME_TARGET): _precomp $(_OBJ)
 	@ ! test "$(_NB_TO_COMP)" -eq 0 || $(call _print_nothing_to_relink)
@@ -889,7 +790,7 @@ endif
 .PHONY: _precomp
 _precomp:
 	@ $(eval _NB_TO_COMP := \
-		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) _IGNORE_SELF_UPDATE=1 $(_OBJ) | grep +1 | wc -l))
+		$(shell $(MAKE) _COUNT_OBJS=YES _DEBUG=$(_DEBUG) $(_OBJ) | grep +1 | wc -l))
 	@ $(eval _NB_TO_COMP := \
 		$(shell echo $$(( $(_NB_TO_COMP) + \
 			0$(shell test "$(_NB_TO_COMP)" -eq 0 -a ! -f "$(_NAME_TARGET)" && echo 1) \
@@ -911,11 +812,11 @@ _fclean_binaries:
 	@ ! test -f "$(_NAME_DEBUG)" || $(call cmd, rm -f $(_NAME_DEBUG))
 
 .PHONY: clean
-clean: _show_self_update _clean_build_dir
+clean: _clean_build_dir
 	@ $(call _print_end_clean)
 
 .PHONY: fclean
-fclean: _show_self_update _clean_build_dir _fclean_binaries
+fclean: _clean_build_dir _fclean_binaries
 	@ $(call _print_end_fclean)
 
 .PHONY: re
@@ -952,40 +853,22 @@ endif
 ######### Manage debug
 
 .PHONY: debug
-debug: _show_self_update
-	@ $(MAKE) --no-print-directory _DEBUG=1 _IGNORE_SELF_UPDATE=1 all
+debug:
+	@ $(MAKE) --no-print-directory _DEBUG=1 all
 
 ifeq ($(_DEBUG),0)
 $(_NAME_DEBUG): debug
 endif
 
 .PHONY: redebug
-redebug: _show_self_update
-	@ $(MAKE) --no-print-directory _DEBUG=1 _IGNORE_SELF_UPDATE=1 re
+redebug:
+	@ $(MAKE) --no-print-directory _DEBUG=1 re
 
 ######### Manage help
 
 .PHONY: help
-help: _show_self_update
+help:
 	@ $(call _print_help)
-
-######### Manage self update
-
-.PHONY: _show_self_update
-_show_self_update:
-ifeq ($(_SELF_CAN_UPDATE),1)
-	@ $(call _print_can_update)
-endif
-
-.PHONY: self_update_ignore
-self_update_ignore:
-	@ $(call _print_self_update_ignore)
-	@ $(_SELF_CMD_IGNORE_UPDATE)
-
-.PHONY: self_update
-self_update:
-	@ $(call _print_self_update)
-	@ $(_SELF_CMD_UPDATE)
 
 endif #endif of error reporting
 
