@@ -1,10 +1,11 @@
-# [NOT STABLE YET] still developping this idea
 
-# The (ultimate project manager) Makefile [![Main](https://github.com/FauconFan/makefileC/actions/workflows/main.yml/badge.svg)](https://github.com/FauconFan/makefileC/actions/workflows/main.yml)
+# The Makefile I wish I had for C Development [![Main](https://github.com/FauconFan/makefileC/actions/workflows/main.yml/badge.svg)](https://github.com/FauconFan/makefileC/actions/workflows/main.yml)
 
 This is the summary of my experience applied to programming in C. My ambition is to put together all good practices and necessary features of a well-driven C project. I would like to include good compilation, sub-projects, static analyzers, and testing processes.
 
 I want this makefile to be easy to use, easy to get started with and well-documented.
+
+*I have worked on this project on and off multiple times. Today, I don't code in C anymore, so I want to share the current state of this project. The initial goal of this project was very ambitious, and I let anyone use this Makefile if he/she finds it useful.*
 
 ## Ambition
 
